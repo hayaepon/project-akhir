@@ -9,7 +9,7 @@
     <div class="flex justify-center mb-4">
         <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16">
     </div>
-    <h2 class="text-center text-2xl font-bold mb-2">Selamat Datang Admin</h2>
+    <h2 class="text-center text-2xl font-bold mb-2">Selamat Datang Admin1</h2>
     <p class="text-center text-gray-600">
         Selamat datang di Sistem Pendukung Keputusan Penerimaan Beasiswa STMIK Antar Bangsa.
         Kelola data pendaftar, atur bobot kriteria, dan lakukan seleksi beasiswa dengan cepat dan akurat menggunakan metode SMART.
