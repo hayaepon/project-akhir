@@ -10,20 +10,18 @@
     <table id="tabelKriteria" class="min-w-full table-auto">
         <thead>
             <tr class="bg-blue-800 text-white font-medium">
-                <th class="border px-4 py-2 text-left font-normal">Kode</th>
+                <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
                 <th class="border px-4 py-2 text-left font-normal">Nama Kriteria</th>
                 <th class="border px-4 py-2 text-left font-normal">Bobot</th>
-                <th class="border px-4 py-2 text-left font-normal">Sifat</th>
                 <th class="border px-4 py-2 text-left font-normal">Aksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach($kriterias as $kriteria)
                 <tr class="bg-white">
-                    <td class="border px-4 py-2">{{ $kriteria->kode_kriteria }}</td>
-                    <td class="border px-4 py-2">{{ $kriteria->nama_kriteria }}</td>
+                    <td class="border px-4 py-2">{{ $kriteria->beasiswa }}</td>
+                    <td class="border px-4 py-2">{{ $kriteria->kriteria }}</td>
                     <td class="border px-4 py-2">{{ $kriteria->bobot }}%</td>
-                    <td class="border px-4 py-2">{{ $kriteria->sifat }}</td>
                     <td class="border px-4 py-2">
                         <a href="{{ route('kriteria.edit', $kriteria->id) }}" class="text-yellow-500">
                             <i class="fas fa-edit text-yellow-300"></i>
