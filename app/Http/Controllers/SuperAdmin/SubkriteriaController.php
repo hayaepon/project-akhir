@@ -12,31 +12,33 @@ class SubkriteriaController extends Controller
     public function index()
     {
         $subKriterias = Subkriteria::with('kriteria')->get();
-        return view('superadmin.subkriteria.index', compact('subKriterias'));
+        $kriterias = Kriteria::all(); // ambil semua kriteria
+        return view('superadmin.subkriteria.index', compact('subKriterias', 'kriterias'));
     }
+
 
     public function store(Request $request)
     {
         $request->validate([
-            'beasiswa' => 'required',
-            'kriteria' => 'required',
+            'kriteria_id' => 'required|exists:kriterias,id',
             'sub_kriteria' => 'required',
             'nilai' => 'required|numeric'
         ]);
 
-        $kriteria = Kriteria::firstOrCreate([
-            'kriteria' => $request->kriteria,
-            'beasiswa' => $request->beasiswa
-        ]);
+        // Ambil beasiswa dari kriteria yang dipilih
+        $kriteria = Kriteria::findOrFail($request->kriteria_id);
 
         Subkriteria::create([
-            'kriteria_id' => $kriteria->id,
+            'kriteria_id' => $request->kriteria_id,
+            'beasiswa' => $kriteria->beasiswa,  // ambil dari kriteria
             'sub_kriteria' => $request->sub_kriteria,
             'nilai' => $request->nilai,
         ]);
 
         return redirect()->route('subkriteria.index')->with('success', 'Sub Kriteria berhasil ditambahkan');
     }
+
+
 
     public function edit($id)
     {

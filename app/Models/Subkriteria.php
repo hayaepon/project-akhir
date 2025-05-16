@@ -16,6 +16,7 @@ class Subkriteria extends Model
         'nilai',
     ];
 
+
     public function kriteria()
     {
         return $this->belongsTo(Kriteria::class);
