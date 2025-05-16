@@ -21,7 +21,12 @@ class KriteriaController extends Controller
             'bobot' => 'required|numeric'
         ]);
 
-        Kriteria::create($request->all());
+        Kriteria::create([
+            'beasiswa' => $request->beasiswa,
+            'kriteria' => $request->kriteria,
+            'bobot' => $request->bobot,
+        ]);
+
 
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil ditambahkan.');
     }
