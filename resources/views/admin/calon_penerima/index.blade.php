@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Tabel Data Calon Penerima -->
-<div class="bg-white p-6 rounded-lg shadow-md mb-6">
+<div class="bg-white p-6 mb-4">
     <h2 class="text-2xl font-semibold mb-2">Data Calon Penerima</h2>
     <hr class="border-t-2 border-gray-300 mb-4 w-full">
     

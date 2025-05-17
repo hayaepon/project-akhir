@@ -4,8 +4,8 @@
 
 @section('content')
 <!-- Data Kriteria & Bobot -->
-<div class="bg-white p-6 rounded-lg shadow-md mb-8">
-    <h3 class="text-xl font-semibold mb-4">Data Kriteria & Bobot</h3>
+<div class="bg-white p-6">
+    <h3 class="text-xl font-semibold mb-2">Data Kriteria & Bobot</h3>
     <hr class="border-t-2 border-gray-300 mb-4 w-full">
     <table id="tabelKriteria" class="min-w-full table-auto">
         <thead>

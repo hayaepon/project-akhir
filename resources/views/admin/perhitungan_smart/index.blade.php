@@ -5,9 +5,9 @@
 @section('content')
 <!-- Perhitungan SMART -->
 <div class="container mx-auto px-4 py-6 h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-2xl font-medium mb-8 text-[22px]">Perhitungan SMART</h3>
-
+    <div class="bg-white p-6">
+        <h3 class="text-2xl font-medium mb-2 text-[22px]">Perhitungan SMART</h3>
+        <hr class="border-t-2 border-gray-300 mb-4 w-full">
         <!-- Form Perhitungan SMART -->
         <form action="{{ route('admin.perhitungan_smart.index') }}" method="POST" class="space-y-4">
             @csrf
@@ -103,8 +103,8 @@
     </div>
 
     <!-- Tabel Hasil Perhitungan -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-2xl font-medium mb-8 text-[22px]">Hasil Perhitungan SMART</h3>
+    <div class="bg-white p-6">
+        <h3 class="text-2xl font-medium mb-2 text-[22px]">Hasil Perhitungan SMART</h3>
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
         <table class="min-w-full table-auto border-collapse border border-gray-200">

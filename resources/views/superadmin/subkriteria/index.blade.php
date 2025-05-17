@@ -77,7 +77,7 @@
                             <td class="border px-4 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
                             <td class="border px-4 py-2">{{ $subKriteria->sub_kriteria }}</td>
                             <td class="border px-4 py-2">{{ $subKriteria->nilai }}</td>
-                            <td class="px-6 py-4 flex space-x-2">
+                            <td class="border px-6 py-4 flex space-x-2">
                                 <a href="{{ route('subkriteria.edit', $subKriteria->id) }}" class="text-yellow-500 hover:underline">
                                     <i class="fas fa-edit text-yellow-300"></i>
                                 </a> |
