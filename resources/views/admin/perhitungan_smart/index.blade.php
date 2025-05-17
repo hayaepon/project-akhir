@@ -15,7 +15,7 @@
                 <!-- Kolom 1: Nama Calon Penerima -->
                 <div class="flex flex-col">
                     <label for="calon_penerima" class="text-sm font-medium text-black-700 text-[16px] mb-2">Nama Calon Penerima</label>
-                    <select id="calon_penerima" name="calon_penerima" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="calon_penerima" name="calon_penerima" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Nama</option>
                         <option value="calon1">Calon 1</option>
                         <option value="calon2">Calon 2</option>
@@ -25,7 +25,7 @@
                 <!-- Kolom 2: Beasiswa -->
                 <div class="flex flex-col">
                     <label for="beasiswa" class="text-sm font-medium text-black-700 text-[16px] mb-2">Beasiswa</label>
-                    <select id="beasiswa" name="beasiswa" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="beasiswa" name="beasiswa" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Beasiswa</option>
                         <option value="kipk">KIPK</option>
                         <option value="tahfidz">Tahfidz</option>
@@ -37,12 +37,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                 <div class="flex flex-col">
                     <label for="kriteria1" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria 1</label>
-                    <input type="text" id="kriteria1" name="kriteria1" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" placeholder="Masukkan Kriteria 1">
+                    <input type="text" id="kriteria1" name="kriteria1" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Masukkan Kriteria 1">
                 </div>
 
                 <div class="flex flex-col">
                     <label for="subkriteria1" class="text-sm font-medium text-black-700 text-[16px] mb-2">Sub Kriteria 1</label>
-                    <select id="subkriteria1" name="subkriteria1" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="subkriteria1" name="subkriteria1" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Sub Kriteria</option>
                         <option value="1">Sub Kriteria 1</option>
                         <option value="2">Sub Kriteria 2</option>
@@ -53,12 +53,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                 <div class="flex flex-col">
                     <label for="kriteria2" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria 2</label>
-                    <input type="text" id="kriteria2" name="kriteria2" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" placeholder="Masukkan Kriteria 2">
+                    <input type="text" id="kriteria2" name="kriteria2" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Masukkan Kriteria 2">
                 </div>
 
                 <div class="flex flex-col">
                     <label for="subkriteria2" class="text-sm font-medium text-black-700 text-[16px] mb-2">Sub Kriteria 2</label>
-                    <select id="subkriteria2" name="subkriteria2" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="subkriteria2" name="subkriteria2" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Sub Kriteria</option>
                         <option value="1">Sub Kriteria 1</option>
                         <option value="2">Sub Kriteria 2</option>
@@ -69,12 +69,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                 <div class="flex flex-col">
                     <label for="kriteria3" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria 3</label>
-                    <input type="text" id="kriteria3" name="kriteria3" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" placeholder="Masukkan Kriteria 3">
+                    <input type="text" id="kriteria3" name="kriteria3" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Masukkan Kriteria 3">
                 </div>
 
                 <div class="flex flex-col">
                     <label for="subkriteria3" class="text-sm font-medium text-black-700 text-[16px] mb-2">Sub Kriteria 3</label>
-                    <select id="subkriteria3" name="subkriteria3" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="subkriteria3" name="subkriteria3" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Sub Kriteria</option>
                         <option value="1">Sub Kriteria 1</option>
                         <option value="2">Sub Kriteria 2</option>
@@ -85,12 +85,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                 <div class="flex flex-col">
                     <label for="kriteria4" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria 4</label>
-                    <input type="text" id="kriteria4" name="kriteria4" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" placeholder="Masukkan Kriteria 4">
+                    <input type="text" id="kriteria4" name="kriteria4" class="w-full p-3 border rounded-lg shadow-sm" placeholder="Masukkan Kriteria 4">
                 </div>
 
                 <div class="flex flex-col">
                     <label for="subkriteria4" class="text-sm font-medium text-black-700 text-[16px] mb-2">Sub Kriteria 4</label>
-                    <select id="subkriteria4" name="subkriteria4" class="w-full p-3 border rounded-lg shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
+                    <select id="subkriteria4" name="subkriteria4" class="w-full p-3 border rounded-lg shadow-sm">
                         <option value="">Pilih Sub Kriteria</option>
                         <option value="1">Sub Kriteria 1</option>
                         <option value="2">Sub Kriteria 2</option>

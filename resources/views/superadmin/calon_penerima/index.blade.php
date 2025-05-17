@@ -6,8 +6,8 @@
 <div class="container mx-auto px-4 py-6 h-screen">
     <!-- Form untuk menambah Data Calon Penerima -->
     <div class="bg-white p-6 rounded-lg mb-6">
-        <h2 class="text-2xl font-medium mb-8 text-[22px]">Form Input Calon Penerima</h2>
-
+        <h2 class="text-2xl font-medium mb-4 text-[22px]">Form Input Calon Penerima</h2>
+        <hr class="border-t-2 border-gray-300 mb-4 w-full">
         <form action="{{ route('calon-penerima.store') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -42,10 +42,8 @@
         </form>
     </div>
 
-    <hr class="my-2">
-
     <!-- Tabel Data Calon Penerima -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div class="bg-white p-6 rounded-lg shadow-md mb-4">
     <h2 class="text-2xl font-medium mb-2">Data Calon Penerima</h2>
     <hr class="border-t-2 border-gray-300 mb-4 w-full">
     
