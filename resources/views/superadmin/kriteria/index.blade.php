@@ -60,7 +60,7 @@
                     <tr class="bg-white">
                         <td class="border px-4 py-2">{{ $kriteria->beasiswa }}</td>
                         <td class="pborder px-4 py-2">{{ $kriteria->kriteria }}</td>
-                        <td class="border px-4 py-2">{{ $kriteria->bobot }}%</td>
+                        <td class="border px-4 py-2">{{ $kriteria->bobot }}</td>
                         <td class="border px-4 py-2">
                             <a href="{{ route('kriteria.edit', $kriteria->id) }}" class="text-yellow-500">
                             <i class="fas fa-edit text-yellow-300"></i>

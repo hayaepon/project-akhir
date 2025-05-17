@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Superadmin;
+
 use App\Models\Kriteria;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,16 +18,15 @@ class KriteriaController extends Controller
     {
         $request->validate([
             'beasiswa' => 'required',
-            'kriteria' => 'required',
-            'bobot' => 'required|numeric'
+            'kriteria' => 'required|string|max:255',
+            'bobot' => 'required|numeric|min:0|max:100',
         ]);
 
         Kriteria::create([
             'beasiswa' => $request->beasiswa,
             'kriteria' => $request->kriteria,
-            'bobot' => $request->bobot,
+            'bobot' => $request->bobot / 100, // konversi ke pecahan desimal
         ]);
-
 
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil ditambahkan.');
     }
@@ -41,12 +41,17 @@ class KriteriaController extends Controller
     {
         $request->validate([
             'beasiswa' => 'required',
-            'kriteria' => 'required',
-            'bobot' => 'required|numeric'
+            'kriteria' => 'required|string|max:255',
+            'bobot' => 'required|numeric|min:0|max:100',
         ]);
 
         $kriteria = Kriteria::findOrFail($id);
-        $kriteria->update($request->all());
+
+        $kriteria->update([
+            'beasiswa' => $request->beasiswa,
+            'kriteria' => $request->kriteria,
+            'bobot' => $request->bobot / 100, // konversi ke desimal juga di update
+        ]);
 
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil diperbarui.');
     }
@@ -59,4 +64,3 @@ class KriteriaController extends Controller
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil dihapus.');
     }
 }
-
