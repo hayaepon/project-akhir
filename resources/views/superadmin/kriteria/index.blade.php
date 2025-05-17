@@ -7,15 +7,15 @@
 
     <!-- Tambah Kriteria -->
     <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 class="text-2xl font-bold mb-4">Tambah Kriteria & Bobot</h2>
+        <h2 class="text-2xl font-medium mb-8 text-[22px]">Tambah Kriteria & Bobot</h2>
 
-        <form action="{{ route('kriteria.store') }}" method="POST">
+        <form action="{{ route('kriteria.store') }}" method="POST" class="space-y-4">
             @csrf
 
             <!-- Beasiswa -->
-            <div class="mb-4">
-                <label for="beasiswa" class="block text-gray-700 font-semibold">Beasiswa</label>
-                <select id="beasiswa" name="beasiswa" class="w-full p-3 border rounded-lg shadow-sm">
+            <div class="flex flex-col mb-4">
+                <label for="beasiswa" class="text-sm font-medium text-black-700 text-[16px] mb-2">Beasiswa</label>
+                <select id="beasiswa" name="beasiswa" class="w-full p-3 border-2 border-gray-400 rounded-md shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2">
                     <option value="">Pilih Beasiswa</option>
                     <option value="KIP-K">KIP-K</option>
                     <option value="Tahfidz">Tahfidz</option>
@@ -23,15 +23,15 @@
             </div>
 
             <!-- Kriteria -->
-            <div class="mb-4">
-                <label for="kriteria" class="block text-gray-700 font-semibold">Kriteria</label>
-                <input type="text" id="kriteria" name="kriteria" class="w-full p-3 border rounded-lg shadow-sm" required>
+            <div class="flex flex-col mb-4">
+                <label for="kriteria" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria</label>
+                <input type="text" id="kriteria" name="kriteria" class="w-full p-3 border-2 border-gray-400 rounded-md shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" required>
             </div>
 
             <!-- Bobot -->
-            <div class="mb-4">
-                <label for="bobot" class="block text-gray-700 font-semibold">Bobot Kriteria (%)</label>
-                <input type="number" id="bobot" name="bobot" class="w-full p-3 border rounded-lg shadow-sm" required>
+            <div class="flex flex-col mb-4">
+                <label for="bobot" class="text-sm font-medium text-black-700 text-[16px] mb-2">Bobot Kriteria (%)</label>
+                <input type="number" id="bobot" name="bobot" class="w-full p-3 border-2 border-gray-400 rounded-md shadow-sm text-sm font-medium text-black-700 text-[16px] mb-2" required>
             </div>
 
             <div class="flex space-x-4 justify-start">
@@ -44,9 +44,10 @@
 
     <!-- Data Kriteria & Bobot -->
     <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-xl font-bold mb-4">Data Kriteria & Bobot</h3>
+        <h3 class="text-xl font-medium mb-4 text-[22px]">Data Kriteria & Bobot</h3>
+        <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
-        <table class="min-w-full table-auto">
+        <table class="min-w-full mt-6 table-auto">
             <thead>
                 <tr class="bg-blue-800 text-white font-medium">
                     <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
@@ -59,7 +60,7 @@
                 @foreach($kriterias as $kriteria)
                     <tr class="bg-white">
                         <td class="border px-4 py-2">{{ $kriteria->beasiswa }}</td>
-                        <td class="pborder px-4 py-2">{{ $kriteria->kriteria }}</td>
+                        <td class="border px-4 py-2">{{ $kriteria->kriteria }}</td>
                         <td class="border px-4 py-2">{{ $kriteria->bobot }}</td>
                         <td class="border px-4 py-2">
                             <a href="{{ route('kriteria.edit', $kriteria->id) }}" class="text-yellow-500">

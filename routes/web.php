@@ -1,91 +1,69 @@
 <?php
 
+// Import semua class dan controller yang diperlukan
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SuperAdmin\SuperAdminDashboardController;
+use App\Http\Controllers\Admin\SmartCalculationController;
+use App\Http\Controllers\Superadmin\CalonPenerimaController;
+use App\Http\Controllers\Superadmin\KriteriaController;
+use App\Http\Controllers\Superadmin\SubkriteriaController;
+use App\Http\Controllers\Superadmin\PerhitunganSmartController;
+use App\Http\Controllers\Superadmin\HasilSeleksiController;
+use App\Http\Controllers\Superadmin\AdminController;
+use App\Http\Controllers\Admin\CalonPenerimaAdminController;
+use App\Http\Controllers\Admin\KriteriaAdminController;
+use App\Http\Controllers\Admin\SubKriteriaAdminController;
+use App\Http\Controllers\Admin\HasilSeleksiAdminController;
 
+// Route utama untuk halaman login
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/super-admin/dashboard', [SuperAdminDashboardController::class, 'index'])->name('superadmin.dashboard');
-});
+// Super Admin Routes (Prefix 'superadmin' and middleware 'auth')
+Route::prefix('superadmin')->middleware('auth')->group(function () {
 
-//route super admin calon penerima
-use App\Http\Controllers\Superadmin\CalonPenerimaController;
+    // Super Admin Dashboard
+    Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('superadmin.dashboard');
 
-Route::middleware(['auth'])->group(function () {
+    // Super Admin Calon Penerima
     Route::resource('calon-penerima', CalonPenerimaController::class);
-});
 
-//route super admin kriteria dan bobot
-Route::prefix('superadmin')->middleware('auth')->group(function () {
-    Route::resource('kriteria', \App\Http\Controllers\Superadmin\KriteriaController::class);
-});
+    // Super Admin Kriteria dan Bobot
+    Route::resource('kriteria', KriteriaController::class);
 
-//route super admin subkriteria
-use App\Http\Controllers\Superadmin\SubkriteriaController;
-
-Route::prefix('superadmin')->middleware('auth')->group(function () {
+    // Super Admin Subkriteria
     Route::resource('subkriteria', SubkriteriaController::class);
-});
 
-//route super admin perhitungan smart
-use App\Http\Controllers\Superadmin\PerhitunganSmartController;
-
-Route::prefix('superadmin')->middleware(['auth'])->group(function () {
+    // Super Admin Perhitungan SMART
     Route::get('/perhitungan-smart', [PerhitunganSmartController::class, 'index'])->name('perhitungan-smart.index');
     Route::post('/perhitungan-smart/hitung', [PerhitunganSmartController::class, 'hitung'])->name('perhitungan-smart.hitung');
+
+    // Super Admin Hasil Seleksi
+    Route::get('/hasil-seleksi', [HasilSeleksiController::class, 'index'])->name('hasil-seleksi.index');
+
+    // Super Admin Manajemen Akun Admin
+    Route::resource('manajemen_admin', AdminController::class)->except(['create', 'edit', 'update', 'show']);
 });
 
-//route super admin hasil seleksi
-use App\Http\Controllers\Superadmin\HasilSeleksiController;
+// Admin Routes (middleware 'auth')
+Route::middleware('auth')->group(function () {
 
-Route::get('/hasil-seleksi', [HasilSeleksiController::class, 'index'])->name('hasil-seleksi.index');
+    // Admin Dashboard
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-//route super admin manajemen akun 
-use App\Http\Controllers\Superadmin\AdminController;
-
-Route::resource('manajemen_admin', AdminController::class)->except(['create', 'edit', 'update', 'show']);
-
-//route admin calon penerima
-
-use App\Http\Controllers\Admin\CalonPenerimaAdminController;
-
-Route::middleware(['auth'])->group(function () {
+    // Admin Calon Penerima
     Route::get('admin/calon-penerima', [CalonPenerimaAdminController::class, 'index'])->name('admin.calon_penerima.index');
-});
 
-//route admin kriteria
-
-use App\Http\Controllers\Admin\KriteriaAdminController;
-Route::middleware(['auth'])->group(function () {
+    // Admin Kriteria dan Subkriteria
     Route::get('admin/kriteria', [KriteriaAdminController::class, 'index'])->name('admin.kriteria.index');
-});
-
-//route admin subkriteria
-
-use App\Http\Controllers\Admin\SubKriteriaAdminController;
-Route::middleware(['auth'])->group(function () {
     Route::get('admin/subkriteria', [SubKriteriaAdminController::class, 'index'])->name('admin.subkriteria.index');
-});
 
-//route admin Hasil Seleksi
-use App\Http\Controllers\Admin\HasilSeleksiAdminController;
-
-Route::prefix('admin')->middleware('auth')->group(function () {
+    // Admin Hasil Seleksi
     Route::get('admin/Hasil_Seleksi', [HasilSeleksiAdminController::class, 'index'])->name('admin.Hasil_Seleksi.index');
-    
+
+    // Admin Perhitungan SMART
+    Route::get('/admin/perhitungan_smart', [SmartCalculationController::class, 'index'])->name('admin.perhitungan_smart.index');
 });
-
-
-
-
