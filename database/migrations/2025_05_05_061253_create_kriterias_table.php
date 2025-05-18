@@ -6,24 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('kriterias', function (Blueprint $table) {
-        $table->id();
-        $table->string('beasiswa'); // KIP-K atau Tahfidz
-        $table->string('kriteria');
-        $table->float('bobot');
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('kriterias', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->id();
+            $table->unsignedBigInteger('jenis_beasiswa_id');
+            $table->string('kriteria');
+            $table->float('bobot');
+            $table->timestamps();
 
+            $table->foreign('jenis_beasiswa_id')
+                ->references('id')
+                ->on('jenis_beasiswas')
+                ->onDelete('cascade');
+        });
 
-    /**
-     * Reverse the migrations.
-     */
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('kriterias');

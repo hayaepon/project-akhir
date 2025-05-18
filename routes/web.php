@@ -67,3 +67,11 @@ Route::middleware('auth')->group(function () {
     // Admin Perhitungan SMART
     Route::get('/admin/perhitungan_smart', [SmartCalculationController::class, 'index'])->name('admin.perhitungan_smart.index');
 });
+
+use App\Http\Controllers\SuperAdmin\BeasiswaController;
+
+Route::get('/superadmin/calon_penerima', [BeasiswaController::class, 'create'])->name('superadmin.calon.index');
+
+Route::get('/get-kriteria/{beasiswa_id}', [SubkriteriaController::class, 'getKriteriaByBeasiswa']);
+
+

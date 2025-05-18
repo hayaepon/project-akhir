@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Superadmin;
 use App\Models\CalonPenerima;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\JenisBeasiswa;
 
 class CalonPenerimaController extends Controller
 {
     public function index()
     {
-        $dataCalonPenerima = CalonPenerima::all();
-        return view('superadmin.calon_penerima.index', compact('dataCalonPenerima'));
+        $jenisBeasiswas = JenisBeasiswa::all(); // ambil semua data beasiswa
+        $dataCalonPenerima = CalonPenerima::all(); // ambil semua data calon penerima
+
+        return view('superadmin.calon_penerima.index', compact('jenisBeasiswas', 'dataCalonPenerima'));
     }
 
     public function store(Request $request)

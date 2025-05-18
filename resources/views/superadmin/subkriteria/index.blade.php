@@ -15,21 +15,47 @@
                         <label for="beasiswa" class="text-sm font-medium text-black-700 text-[16px] mb-2">Beasiswa</label>
                         <select id="beasiswa" name="beasiswa" class="w-full p-3 border rounded-lg shadow-sm">
                             <option value="">Pilih Beasiswa</option>
-                            <option value="KIP-K">KIP-K</option>
-                            <option value="Tahfiz">Tahfiz</option>
+                            @foreach($jenisBeasiswas as $beasiswa)
+                        <option value="{{ $beasiswa->id }}" {{ (old('jenis_beasiswa_id') == $beasiswa->id || (isset($kriteria) && $kriteria->jenis_beasiswa_id == $beasiswa->id)) ? 'selected' : '' }}>
+                            {{ $beasiswa->nama }}
+                        </option>
+                    @endforeach
                         </select>
                     </div>
+
+                    @push('scripts')
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $('#beasiswa').on('change', function () {
+                                var beasiswaID = $(this).val();
+
+                                if (beasiswaID) {
+                                    $.ajax({
+                                        url: '/get-kriteria/' + beasiswaID,
+                                        type: 'GET',
+                                        dataType: 'json',
+                                        success: function (data) {
+                                            $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+                                            $.each(data, function (key, value) {
+                                                $('#kriteria_id').append('<option value="' + value.id + '">' + value.kriteria + '</option>');
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+                                }
+                            });
+                        </script>
+                    @endpush
+
 
                     <div class="flex flex-col mb-4">
                         <label for="kriteria_id" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria</label>
                         <select id="kriteria_id" name="kriteria_id" class="w-full p-3 border rounded-lg shadow-sm" required>
                             <option value="">Pilih Kriteria</option>
-                            @foreach ($kriterias as $kriteria)
-                                <option value="{{ $kriteria->id }}">{{ $kriteria->kriteria }} - ({{ $kriteria->beasiswa }})</option>
-                            @endforeach
                         </select>
                     </div>
-                </div>
+                    </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div class="flex flex-col mb-4">
@@ -64,6 +90,7 @@
                 <thead>
                     <tr class="bg-blue-800 text-white font-medium">
                         <th class="border px-4 py-2 text-left font-normal">No</th>
+                        <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
                         <th class="border px-4 py-2 text-left font-normal">Kriteria</th>
                         <th class="border px-4 py-2 text-left font-normal">Sub Kriteria</th>
                         <th class="border px-4 py-2 text-left font-normal">Nilai</th>
@@ -74,6 +101,7 @@
                     @foreach ($subKriterias as $subKriteria)
                         <tr class="border-b">
                             <td class="border px-4 py-2">{{ $loop->iteration }}</td>
+                            <td class="border px-4 py-2">{{ $subKriteria->kriteria->jenisBeasiswa->nama ?? '-' }}</td> 
                             <td class="border px-4 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
                             <td class="border px-4 py-2">{{ $subKriteria->sub_kriteria }}</td>
                             <td class="border px-4 py-2">{{ $subKriteria->nilai }}</td>

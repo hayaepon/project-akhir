@@ -9,18 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('subkriterias', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('kriteria_id')->constrained('kriterias')->onDelete('cascade');
-        $table->string('beasiswa');
-        $table->string('sub_kriteria');
-        $table->integer('nilai');
-        $table->timestamps();
-    });
-}
-
+    public function up(): void
+    {
+        Schema::create('subkriterias', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('kriteria_id')->constrained('kriterias')->onDelete('cascade');
+            $table->foreignId('jenis_beasiswa_id')->constrained('jenis_beasiswas')->onDelete('cascade');
+            $table->string('sub_kriteria');
+            $table->integer('nilai');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

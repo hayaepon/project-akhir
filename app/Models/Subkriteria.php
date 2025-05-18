@@ -11,10 +11,11 @@ class Subkriteria extends Model
 
     protected $fillable = [
         'kriteria_id',
-        'beasiswa',
+        'jenis_beasiswa_id',
         'sub_kriteria',
         'nilai',
     ];
+
 
 
     public function kriteria()
