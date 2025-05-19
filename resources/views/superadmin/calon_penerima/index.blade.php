@@ -81,11 +81,11 @@
                     <td class="border px-4 py-2">{{ $data->asal_sekolah }}</td>
                     <td class="border px-4 py-2">{{ $data->pilihan_beasiswa }}</td>
                     <td class="border px-4 py-2 text-center">
-                        <div class="flex items-center justify-center space-x-2"> <!-- Mengurangi space-x agar lebih rapat -->
+                        <div class="flex items-center justify-center space-x-2">
                             <a href="{{ route('calon-penerima.edit', $data->id) }}" class="text-blue-500 hover:underline">
                                 <i class="fas fa-edit text-yellow-300"></i>
                             </a>
-                            <span class="text-gray-400 mx-2">|</span> <!-- Menambahkan pemisah | dengan margin horizontal -->
+                            <span class="text-gray-400 mx-2">|</span> 
                             <form action="{{ route('calon-penerima.destroy', $data->id) }}" method="POST" class="inline-block">
                                 @csrf
                                 @method('DELETE')

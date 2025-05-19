@@ -40,10 +40,11 @@
                     <td class="border px-4 py-2">{{ $item->nama_calon_penerima}}</td>
                     <td class="border px-4 py-2">{{ $item->asal_sekolah }}</td>
                     <td class="border px-4 py-2">{{ $item->pilihan_beasiswa }}</td>
-                    <td class="border px-4 py-2">
+                    <td class="border px-4 py-2 text-center">
                         <a href="{{ route('calon-penerima.edit', $item->id) }}" class="text-blue-500 hover:underline">
                             <i class="fas fa-edit text-yellow-300"></i>
-                        </a> |
+                        </a>
+                        <span class="text-gray-400 mx-2">|</span>
                         <form action="{{ route('calon-penerima.destroy', $item->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')

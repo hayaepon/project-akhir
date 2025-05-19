@@ -129,10 +129,12 @@
                     <td class="border px-4 py-2">75</td>
                     <td class="border px-4 py-2">90</td>
                     <td class="border px-4 py-2">85</td>
-                    <td class="border px-4 py-2">
+                    <td class="border px-4 py-2 text-center">
+                        <div class="flex justify-center items-center space-x-3">
                         <a href="#" class="text-blue-500 hover:underline">
                             <i class="fas fa-edit text-yellow-300"></i>
-                        </a> |
+                        </a>
+                        <span class="text-gray-400">|</span>
                         <form action="#" method="POST" class="inline">
                             @csrf
                             @method('DELETE')

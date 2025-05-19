@@ -20,14 +20,16 @@
             <tbody>
                 @foreach ($subkriterias as $subKriteria)
                     <tr class="bg white">
-                        <td class="border px-6 py-4 font-normal">{{ $loop->iteration }}</td>
-                        <td class="border px-6 py-4 font-normal">{{ $subKriteria->kriteria->kriteria }}</td>
-                        <td class="border px-6 py-4 font-normal">{{ $subKriteria->sub_kriteria }}</td>
-                        <td class="border px-6 py-4 font-normal">{{ $subKriteria->nilai }}</td>
-                        <td class="border px-6 py-4 flex space-x-2">
+                        <td class="border px-6 py-2 font-normal">{{ $loop->iteration }}</td>
+                        <td class="border px-6 py-2 font-normal">{{ $subKriteria->kriteria->kriteria }}</td>
+                        <td class="border px-6 py-2 font-normal">{{ $subKriteria->sub_kriteria }}</td>
+                        <td class="border px-6 py-2 font-normal">{{ $subKriteria->nilai }}</td>
+                        <td class="border px-6 py-2 text-center">
+                            <div class="flex justify-center items-center space-x-3">
                             <a href="{{ route('subkriteria.edit', $subKriteria->id) }}" class="text-yellow-500 hover:underline">
                             <i class="fas fa-edit text-yellow-300"></i>
                             </a>
+                            <span class="text-gray-400">|</span>
                             <form action="{{ route('subkriteria.destroy', $subKriteria->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
@@ -35,6 +37,7 @@
                                 <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
