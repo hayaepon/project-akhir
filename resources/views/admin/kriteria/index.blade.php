@@ -13,7 +13,6 @@
                 <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
                 <th class="border px-4 py-2 text-left font-normal">Nama Kriteria</th>
                 <th class="border px-4 py-2 text-left font-normal">Bobot</th>
-                <th class="border px-4 py-2 text-left font-normal">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -22,21 +21,6 @@
                     <td class="border px-4 py-2">{{ $kriteria->beasiswa }}</td>
                     <td class="border px-4 py-2">{{ $kriteria->kriteria }}</td>
                     <td class="border px-4 py-2">{{ $kriteria->bobot }}</td>
-                    <td class="border px-4 py-2 text-center">
-                        <div class="flex justify-center items-center space-x-3">
-                        <a href="{{ route('kriteria.edit', $kriteria->id) }}" class="text-yellow-500">
-                            <i class="fas fa-edit text-yellow-300"></i>
-                        </a>
-                        <span class="text-gray-400">|</span>
-                        <form action="{{ route('kriteria.destroy', $kriteria->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                        </div>
-                    </td>
                 </tr>
             @endforeach
         </tbody>

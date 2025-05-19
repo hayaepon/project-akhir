@@ -29,7 +29,6 @@
                 <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
                 <th class="border px-4 py-2 text-left font-normal">Asal Sekolah</th>
                 <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
-                <th class="border px-4 py-2 text-left font-normal">Aksi</th>
             </tr>
         </thead>
         <tbody id="table-body">
@@ -37,22 +36,9 @@
                 <tr class="bg-white">
                     <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                     <td class="border px-4 py-2">{{ $item->no_pendaftaran }}</td>
-                    <td class="border px-4 py-2">{{ $item->nama_calon_penerima}}</td>
+                    <td class="border px-4 py-2">{{ $item->nama_calon_penerima }}</td>
                     <td class="border px-4 py-2">{{ $item->asal_sekolah }}</td>
                     <td class="border px-4 py-2">{{ $item->pilihan_beasiswa }}</td>
-                    <td class="border px-4 py-2 text-center">
-                        <a href="{{ route('calon-penerima.edit', $item->id) }}" class="text-blue-500 hover:underline">
-                            <i class="fas fa-edit text-yellow-300"></i>
-                        </a>
-                        <span class="text-gray-400 mx-2">|</span>
-                        <form action="{{ route('calon-penerima.destroy', $item->id) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:underline">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
                 </tr>
             @endforeach
         </tbody>
