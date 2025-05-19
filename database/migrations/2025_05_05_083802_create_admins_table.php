@@ -19,6 +19,7 @@ return new class extends Migration
         $table->enum('role', ['SuperAdmin', 'Admin']);
         $table->enum('status', ['Aktif', 'Non-Aktif']);
         $table->timestamps();
+
     });
 }
 

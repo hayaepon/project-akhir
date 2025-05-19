@@ -55,6 +55,8 @@ Route::get('/hasil-seleksi', [HasilSeleksiController::class, 'index'])->name('ha
 use App\Http\Controllers\Superadmin\AdminController;
 
 Route::resource('manajemen_admin', AdminController::class)->except(['create', 'edit', 'update', 'show']);
+Route::resource('manajemen_admin', AdminController::class)->except(['edit', 'update', 'show']);
+
 
 //route admin calon penerima
 

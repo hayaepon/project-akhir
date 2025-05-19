@@ -13,6 +13,10 @@ class AdminController extends Controller
         $admins = Admin::all();
         return view('superadmin.manajemen_admin.index', compact('admins'));
     }
+    public function create()
+    {
+    return view('superadmin.manajemen_admin.create');
+    }
 
     public function store(Request $request)
     {
@@ -22,6 +26,7 @@ class AdminController extends Controller
             'username' => 'required|unique:admins',
             'role' => 'required',
             'status' => 'required',
+            
         ]);
 
         Admin::create($request->all());
