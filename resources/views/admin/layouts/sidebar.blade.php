@@ -46,7 +46,7 @@
         </div>
 
         <!-- Menu Perhitungan SMART -->
-        <a href="#" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 cursor-pointer text-white">
+        <a href="{{ route('admin.perhitungan_smart.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 cursor-pointer text-white">
             <i data-lucide="calculator" class="w-5 h-5"></i>
             <span>Perhitungan SMART</span>
         </a>

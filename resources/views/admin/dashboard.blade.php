@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Sambutan -->
-<div class="bg-white p-6 rounded-lg shadow-md mb-8">
+<div class="bg-white p-6 mb-8">
     <div class="flex justify-center mb-4">
         <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16">
     </div>

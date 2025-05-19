@@ -5,26 +5,26 @@
 @section('content')
 <div class="container mx-auto py-4 px-6 h-screen">
     <div class="flex justify-between items-center mb-4">
-        <h4 class="text-2xl font-bold mb-4">Daftar Data User</h4>
-        <!-- Button to trigger modal for adding a new admin -->
+        <h4 class="text-2xl font-medium text-[22px]">Daftar Data User</h4>
         <a href="{{ route('manajemen_admin.create') }}"
    class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-green-600">
    + Tambah
 </a>
 
     </div>
+    <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+    <div class="overflow-x-auto bg-white shadow-md">
         <table class="min-w-full table-auto" id="adminTable">
-            <thead class="bg-blue-500 text-white">
+            <thead class="bg-blue-800 text-white font-medium">
                 <tr>
-                    <th class="px-4 py-2 text-left">No</th>
-                    <th class="px-4 py-2 text-left">Nama</th>
-                    <th class="px-4 py-2 text-left">Email</th>
-                    <th class="px-4 py-2 text-left">Username</th>
-                    <th class="px-4 py-2 text-left">Role</th>
-                    <th class="px-4 py-2 text-left">Status</th>
-                    <th class="px-4 py-2 text-left">Aksi</th>
+                    <th class="border px-4 py-2 text-left font-normal">No</th>
+                    <th class="border px-4 py-2 text-left font-normal">Nama</th>
+                    <th class="border px-4 py-2 text-left font-normal">Email</th>
+                    <th class="border px-4 py-2 text-left font-normal">Username</th>
+                    <th class="border px-4 py-2 text-left font-normal">Role</th>
+                    <th class="border px-4 py-2 text-left font-normal">Status</th>
+                    <th class="border px-4 py-2 text-left font-normal">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,53 +34,43 @@
 </div>
 
 <!-- Modal to Add New Admin (hidden initially) -->
-<!-- Modal Add Admin -->
-<div id="addAdminModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
-  <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
-    <h2 class="text-xl font-semibold mb-4">Input Data User</h2>
-    <form action="{{ route('manajemen_admin.store') }}" method="POST">
-      @csrf
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label for="nama" class="block text-sm font-medium">Nama</label>
-          <input type="text" name="nama" id="nama" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-        </div>
-        <div>
-          <label for="email" class="block text-sm font-medium">Email</label>
-          <input type="email" name="email" id="email" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-        </div>
-        <div>
-          <label for="username" class="block text-sm font-medium">Username</label>
-          <input type="text" name="username" id="username" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-        </div>
-        <div>
-          <label for="role" class="block text-sm font-medium">Role</label>
-          <select name="role" id="role" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-            <option value="Admin">Admin</option>
-            <option value="SuperAdmin">SuperAdmin</option>
-          </select>
-        </div>
-        <div>
-          <label for="status" class="block text-sm font-medium">Status</label>
-          <select name="status" id="status" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-            <option value="Aktif">Aktif</option>
-            <option value="Non-Aktif">Non-Aktif</option>
-          </select>
-        </div>
-        <div>
-          <label for="password" class="block text-sm font-medium">Password</label>
-          <input type="password" name="password" id="password" class="mt-1 block w-full border rounded-lg px-3 py-2" required>
-        </div>
-      </div>
-
-      <div class="mt-6 flex justify-end space-x-2">
-        <button type="button" id="closeModal" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Batal</button>
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Simpan</button>
-      </div>
-    </form>
-  </div>
+<div id="addAdminModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <h3 class="text-lg font-semibold mb-4">Tambah Admin</h3>
+        <form id="addAdminForm">
+            <div class="mb-4">
+                <label class="block mb-2">Nama:</label>
+                <input type="text" id="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2">Email:</label>
+                <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2">Username:</label>
+                <input type="text" id="username" class="w-full p-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2">Role:</label>
+                <select id="role" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="SuperAdmin">SuperAdmin</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2">Status:</label>
+                <select id="status" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="Aktif">Aktif</option>
+                    <option value="Non-Aktif">Non-Aktif</option>
+                </select>
+            </div>
+            <div class="flex justify-between">
+                <button type="button" id="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded-lg">Batal</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Simpan</button>
+            </div>
+        </form>
+    </div>
 </div>
-
 
 @endsection
 
@@ -112,13 +102,13 @@ document.getElementById('addAdminForm').addEventListener('submit', function(e) {
     // Create a new row and cells
     const newRow = table.insertRow();
     newRow.innerHTML = `
-        <td class="px-4 py-2">${table.rows.length}</td>
-        <td class="px-4 py-2">${nama}</td>
-        <td class="px-4 py-2">${email}</td>
-        <td class="px-4 py-2">${username}</td>
-        <td class="px-4 py-2">${role}</td>
-        <td class="px-4 py-2">${status}</td>
-        <td class="px-4 py-2">
+        <td class="border px-4 py-2">${table.rows.length}</td>
+        <td class="border px-4 py-2">${nama}</td>
+        <td class="border px-4 py-2">${email}</td>
+        <td class="border px-4 py-2">${username}</td>
+        <td class="border px-4 py-2">${role}</td>
+        <td class="border px-4 py-2">${status}</td>
+        <td class="border px-4 py-2">
             <a href="#" class="bg-yellow-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-yellow-600">Edit</a>
             <a href="#" class="bg-red-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-red-600">Hapus</a>
         </td>

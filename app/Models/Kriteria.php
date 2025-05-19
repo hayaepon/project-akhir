@@ -9,11 +9,16 @@ class Kriteria extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['kriteria'];
+    // Sesuaikan fillable dengan nama kolom di database
+    protected $fillable = ['jenis_beasiswa_id', 'kriteria', 'bobot'];
+
+    public function jenisBeasiswa()
+    {
+        return $this->belongsTo(JenisBeasiswa::class, 'jenis_beasiswa_id');
+    }
 
     public function subkriterias()
     {
         return $this->hasMany(Subkriteria::class);
     }
 }
-
