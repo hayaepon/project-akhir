@@ -7,10 +7,9 @@
     <div class="flex justify-between items-center mb-4">
         <h4 class="text-2xl font-medium text-[22px]">Daftar Data User</h4>
         <a href="{{ route('manajemen_admin.create') }}"
-   class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-green-600">
-   + Tambah
-</a>
-
+            class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-green-600">
+            + Tambah
+        </a>
     </div>
     <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
@@ -21,58 +20,38 @@
                     <th class="border px-4 py-2 text-left font-normal">No</th>
                     <th class="border px-4 py-2 text-left font-normal">Nama</th>
                     <th class="border px-4 py-2 text-left font-normal">Email</th>
-                    <th class="border px-4 py-2 text-left font-normal">Username</th>
+                    <th class="border px-4 py-2 text-left font-normal">Password</th>
                     <th class="border px-4 py-2 text-left font-normal">Role</th>
-                    <th class="border px-4 py-2 text-left font-normal">Status</th>
                     <th class="border px-4 py-2 text-left font-normal">Aksi</th>
                 </tr>
             </thead>
             <tbody>
+                @foreach($admins as $index => $admin)
+                <tr>
+                    <td class="border px-4 py-2">{{ $index + 1 }}</td>
+                    <td class="border px-4 py-2">{{ $admin->name }}</td>
+                    <td class="border px-4 py-2">{{ $admin->email }}</td>
+                    <td class="border px-4 py-2">{{ $admin->password }}</td>
+                    <td class="border px-4 py-2">{{ $admin->role }}</td>
+                    <td class="border px-4 py-2">
+                        <a href="{{ route('manajemen_admin.edit', $admin->id) }}"
+                            class="bg-yellow-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-yellow-600">Edit</a>
+                        <form action="{{ route('manajemen_admin.destroy', $admin->id) }}" method="POST" class="inline-block"
+                            onsubmit="return confirm('Yakin ingin menghapus admin ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-red-600">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
 </div>
-
-<!-- Modal to Add New Admin (hidden initially) -->
-<div id="addAdminModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
-        <h3 class="text-lg font-semibold mb-4">Tambah Admin</h3>
-        <form id="addAdminForm">
-            <div class="mb-4">
-                <label class="block mb-2">Nama:</label>
-                <input type="text" id="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2">Email:</label>
-                <input type="email" id="email" class="w-full p-2 border border-gray-300 rounded-lg" required>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2">Username:</label>
-                <input type="text" id="username" class="w-full p-2 border border-gray-300 rounded-lg" required>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2">Role:</label>
-                <select id="role" class="w-full p-2 border border-gray-300 rounded-lg">
-                    <option value="SuperAdmin">SuperAdmin</option>
-                    <option value="Admin">Admin</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2">Status:</label>
-                <select id="status" class="w-full p-2 border border-gray-300 rounded-lg">
-                    <option value="Aktif">Aktif</option>
-                    <option value="Non-Aktif">Non-Aktif</option>
-                </select>
-            </div>
-            <div class="flex justify-between">
-                <button type="button" id="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded-lg">Batal</button>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Simpan</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 @endsection
+
 
 @section('scripts')
 <script>

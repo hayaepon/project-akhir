@@ -45,9 +45,7 @@ Route::prefix('superadmin')->middleware('auth')->group(function () {
     Route::get('/hasil-seleksi', [HasilSeleksiController::class, 'index'])->name('hasil-seleksi.index');
 
     // Super Admin Manajemen Akun Admin
-
-    Route::resource('manajemen_admin', AdminController::class)->except(['create', 'edit', 'update', 'show']);
-    Route::resource('manajemen_admin', AdminController::class)->except(['edit', 'update', 'show']);
+    Route::resource('manajemen_admin', AdminController::class)->except(['show']);
 });
 
 // Admin Routes (middleware 'auth')
