@@ -144,7 +144,6 @@
                         </form>
                     </td>
                 </tr>
-                <!-- Tambahkan lebih banyak baris jika ada data lainnya -->
             </tbody>
         </table>
     </div>
