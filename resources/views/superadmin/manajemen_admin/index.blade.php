@@ -34,17 +34,23 @@
                     <td class="border px-4 py-2">{{ $admin->password }}</td>
                     <td class="border px-4 py-2">{{ $admin->role }}</td>
                     <td class="border px-4 py-2">
-                        <a href="{{ route('manajemen_admin.edit', $admin->id) }}"
-                            class="bg-yellow-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-yellow-600">Edit</a>
-                        <form action="{{ route('manajemen_admin.destroy', $admin->id) }}" method="POST" class="inline-block"
-                            onsubmit="return confirm('Yakin ingin menghapus admin ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="bg-red-500 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-red-600">Hapus</button>
-                        </form>
+                        <div class="flex items-center">
+                            <a href="{{ route('manajemen_admin.edit', $admin->id) }}" class="text-yellow-400 flex items-center text-xl">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <span class="mx-2 text-gray-400 text-xl flex items-center select-none" style="line-height:1;">|</span>
+                            <form action="{{ route('manajemen_admin.destroy', $admin->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 flex items-center text-xl">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+
                     </td>
                 </tr>
+
                 @endforeach
             </tbody>
         </table>
@@ -55,32 +61,32 @@
 
 @section('scripts')
 <script>
-// Open modal
-document.getElementById('addAdminBtn').addEventListener('click', function() {
-    document.getElementById('addAdminModal').classList.remove('hidden');
-});
+    // Open modal
+    document.getElementById('addAdminBtn').addEventListener('click', function() {
+        document.getElementById('addAdminModal').classList.remove('hidden');
+    });
 
-// Close modal
-document.getElementById('closeModal').addEventListener('click', function() {
-    document.getElementById('addAdminModal').classList.add('hidden');
-});
+    // Close modal
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('addAdminModal').classList.add('hidden');
+    });
 
-// Handle form submission to add new row to the table
-document.getElementById('addAdminForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    // Handle form submission to add new row to the table
+    document.getElementById('addAdminForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-    const table = document.getElementById('adminTable').getElementsByTagName('tbody')[0];
+        const table = document.getElementById('adminTable').getElementsByTagName('tbody')[0];
 
-    // Get input values
-    const nama = document.getElementById('nama').value;
-    const email = document.getElementById('email').value;
-    const username = document.getElementById('username').value;
-    const role = document.getElementById('role').value;
-    const status = document.getElementById('status').value;
+        // Get input values
+        const nama = document.getElementById('nama').value;
+        const email = document.getElementById('email').value;
+        const username = document.getElementById('username').value;
+        const role = document.getElementById('role').value;
+        const status = document.getElementById('status').value;
 
-    // Create a new row and cells
-    const newRow = table.insertRow();
-    newRow.innerHTML = `
+        // Create a new row and cells
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
         <td class="border px-4 py-2">${table.rows.length}</td>
         <td class="border px-4 py-2">${nama}</td>
         <td class="border px-4 py-2">${email}</td>
@@ -93,11 +99,11 @@ document.getElementById('addAdminForm').addEventListener('submit', function(e) {
         </td>
     `;
 
-    // Close the modal
-    document.getElementById('addAdminModal').classList.add('hidden');
+        // Close the modal
+        document.getElementById('addAdminModal').classList.add('hidden');
 
-    // Clear the form fields
-    document.getElementById('addAdminForm').reset();
-});
+        // Clear the form fields
+        document.getElementById('addAdminForm').reset();
+    });
 </script>
 @endsection

@@ -85,8 +85,9 @@
                         <td class="border px-4 py-2">
                             <a href="{{ route('calon-penerima.edit', $data->id) }}" class="text-blue-500 hover:underline">
                                 <i class="fas fa-edit text-yellow-300"></i>
-                            </a> |
-                            <form action="{{ route('calon-penerima.destroy', $data->id) }}" method="POST" class="inline">
+                            </a> 
+                            <span class="mx-2 text-gray-400 text-xl flex items-center select-none" style="line-height:1;">|</span>
+                            <form action="{{ route('calon-penerima.destroy', $data->id) }}" method="POST" class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:underline">
