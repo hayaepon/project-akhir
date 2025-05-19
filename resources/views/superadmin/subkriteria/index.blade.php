@@ -7,7 +7,7 @@
         <!-- Form untuk menambah Sub Kriteria -->
         <div class="bg-white p-6 mb-6">
             <h2 class="font-medium text-2xl mb-4 text-[22px]">Tambah Sub Kriteria</h2>
-             <hr class="border-t-2 border-gray-300 mb-4 w-full">
+            <hr class="border-t-2 border-gray-300 mb-4 w-full">
             <form action="{{ route('subkriteria.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -16,38 +16,37 @@
                         <select id="beasiswa" name="beasiswa" class="w-full p-3 border rounded-lg shadow-sm">
                             <option value="">Pilih Beasiswa</option>
                             @foreach($jenisBeasiswas as $beasiswa)
-                        <option value="{{ $beasiswa->id }}" {{ (old('jenis_beasiswa_id') == $beasiswa->id || (isset($kriteria) && $kriteria->jenis_beasiswa_id == $beasiswa->id)) ? 'selected' : '' }}>
-                            {{ $beasiswa->nama }}
-                        </option>
-                    @endforeach
+                                <option value="{{ $beasiswa->id }}" {{ (old('jenis_beasiswa_id') == $beasiswa->id || (isset($kriteria) && $kriteria->jenis_beasiswa_id == $beasiswa->id)) ? 'selected' : '' }}>
+                                    {{ $beasiswa->nama }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     @push('scripts')
-                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <script>
-                            $('#beasiswa').on('change', function () {
-                                var beasiswaID = $(this).val();
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $('#beasiswa').on('change', function () {
+                            var beasiswaID = $(this).val();
 
-                                if (beasiswaID) {
-                                    $.ajax({
-                                        url: '/get-kriteria/' + beasiswaID,
-                                        type: 'GET',
-                                        dataType: 'json',
-                                        success: function (data) {
-                                            $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
-                                            $.each(data, function (key, value) {
-                                                $('#kriteria_id').append('<option value="' + value.id + '">' + value.kriteria + '</option>');
-                                            });
-                                        }
-                                    });
-                                } else {
-                                    $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
-                                }
-                            });
-                        </script>
+                            if (beasiswaID) {
+                                $.ajax({
+                                    url: '/get-kriteria/' + beasiswaID,
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+                                        $.each(data, function (key, value) {
+                                            $('#kriteria_id').append('<option value="' + value.id + '">' + value.kriteria + '</option>');
+                                        });
+                                    }
+                                });
+                            } else {
+                                $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+                            }
+                        });
+                    </script>
                     @endpush
-
 
                     <div class="flex flex-col mb-4">
                         <label for="kriteria_id" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria</label>
@@ -55,7 +54,7 @@
                             <option value="">Pilih Kriteria</option>
                         </select>
                     </div>
-                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                     <div class="flex flex-col mb-4">
@@ -80,7 +79,6 @@
             </form>
         </div>
 
-
         <!-- Tabel Sub Kriteria -->
         <div class="bg-white p-6 mb-8">
             <h2 class="font-medium text-2xl mb-4 text-[22px]">Data Sub Kriteria</h2>
@@ -89,26 +87,28 @@
             <table class="min-w-full mt-6 table-auto">
                 <thead>
                     <tr class="bg-blue-800 text-white font-medium">
-                        <th class="border px-4 py-2 text-left font-normal">No</th>
-                        <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
-                        <th class="border px-4 py-2 text-left font-normal">Kriteria</th>
-                        <th class="border px-4 py-2 text-left font-normal">Sub Kriteria</th>
-                        <th class="border px-4 py-2 text-left font-normal">Nilai</th>
-                        <th class="border px-4 py-2 text-left font-normal">Aksi</th>
+                        <th class="border px-6 py-2 text-left">No</th>
+                        <th class="border px-6 py-2 text-left">Beasiswa</th>
+                        <th class="border px-6 py-2 text-left">Kriteria</th>
+                        <th class="border px-6 py-2 text-left">Sub Kriteria</th>
+                        <th class="border px-6 py-2 text-left">Nilai</th>
+                        <th class="border px-6 py-2 text-left">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($subKriterias as $subKriteria)
                         <tr class="border-b">
-                            <td class="border px-4 py-2">{{ $loop->iteration }}</td>
-                            <td class="border px-4 py-2">{{ $subKriteria->kriteria->jenisBeasiswa->nama ?? '-' }}</td> 
-                            <td class="border px-4 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
-                            <td class="border px-4 py-2">{{ $subKriteria->sub_kriteria }}</td>
-                            <td class="border px-4 py-2">{{ $subKriteria->nilai }}</td>
-                            <td class="border px-6 py-4 flex space-x-2">
+                            <td class="border px-6 py-2">{{ $loop->iteration }}</td>
+                            <td class="border px-6 py-2">{{ $subKriteria->kriteria->jenisBeasiswa->nama ?? '-' }}</td>
+                            <td class="border px-6 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
+                            <td class="border px-6 py-2">{{ $subKriteria->sub_kriteria }}</td>
+                            <td class="border px-6 py-2">{{ $subKriteria->nilai }}</td>
+                            <td class="border px-6 py-2 text-center">
+                                <div class="flex justify-center items-center space-x-3">
                                 <a href="{{ route('subkriteria.edit', $subKriteria->id) }}" class="text-yellow-500 hover:underline">
                                     <i class="fas fa-edit text-yellow-300"></i>
-                                </a> |
+                                </a> 
+                                <span class="text-gray-400">|</span>
                                 <form action="{{ route('subkriteria.destroy', $subKriteria->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
@@ -116,6 +116,7 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
