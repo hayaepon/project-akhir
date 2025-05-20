@@ -33,11 +33,11 @@
                 </div>
 
                 <!-- Atribut -->
-            <select id="atribut" name="atribut" class="w-full p-3 border rounded-lg shadow-sm" required>
-                <option value="">Pilih Atribut</option>
-                <option value="benefit" {{ old('atribut') == 'benefit' ? 'selected' : '' }}>Benefit</option>
-                <option value="cost" {{ old('atribut') == 'cost' ? 'selected' : '' }}>Cost</option>
-            </select>
+                <select id="atribut" name="atribut" class="w-full p-3 border rounded-lg shadow-sm" required>
+                    <option value="">Pilih Atribut</option>
+                    <option value="benefit" {{ old('atribut') == 'benefit' ? 'selected' : '' }}>Benefit</option>
+                    <option value="cost" {{ old('atribut') == 'cost' ? 'selected' : '' }}>Cost</option>
+                </select>
 
                 <div class="flex space-x-4 justify-start">
                     <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
@@ -52,10 +52,10 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-medium text-[22px]">Data Kriteria & Bobot</h3>
 
-                <!-- Tombol Switch KIP-K & Tahfiz di kanan -->
+                <!-- Tombol Switch KIP-K & Tahfidz di kanan -->
                 <div class="flex space-x-4">
-                    <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
-                    <button id="tahfiz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfiz</button>
+                    <button id="kipk-btn" class="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900">KIP-K</button>
+                    <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
                 </thead>
                 <tbody>
                     @foreach($kriterias as $kriteria)
-                    <tr class="bg-white">
+                    <tr class="bg-white" data-beasiswa="{{ strtolower($kriteria->jenisBeasiswa->nama ?? '') }}">
                         <td class="border px-6 py-2">{{ $kriteria->jenisBeasiswa->nama ?? '-' }}</td>
                         <td class="border px-6 py-2">{{ $kriteria->kriteria }}</td>
                         <td class="border px-6 py-2">{{ $kriteria->bobot }}</td>
@@ -99,4 +99,50 @@
             </table>
         </div>
 
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const kipkBtn = document.getElementById('kipk-btn');
+            const tahfidzBtn = document.getElementById('tahfidz-btn');
+            const rows = document.querySelectorAll('tbody tr');
+
+            function filterRows(jenis) {
+                if(jenis === 'all'){
+                    rows.forEach(row => row.style.display = '');
+                    return;
+                }
+                rows.forEach(row => {
+                    const beasiswa = row.getAttribute('data-beasiswa');
+                    if (beasiswa === jenis) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            function setActiveButton(activeBtn) {
+                [kipkBtn, tahfidzBtn].forEach(btn => {
+                    btn.classList.remove('bg-blue-800');
+                    btn.classList.add('bg-gray-400');
+                });
+                activeBtn.classList.remove('bg-gray-400');
+                activeBtn.classList.add('bg-blue-800');
+            }
+
+            // Saat load, belum ada tombol dipilih: tampil semua data, tombol default belum aktif
+            filterRows('all');
+
+            kipkBtn.addEventListener('click', function() {
+                filterRows('kip-k');
+                setActiveButton(kipkBtn);
+            });
+
+            tahfidzBtn.addEventListener('click', function() {
+                filterRows('tahfidz');
+                setActiveButton(tahfidzBtn);
+            });
+        });
+    </script>
 @endsection

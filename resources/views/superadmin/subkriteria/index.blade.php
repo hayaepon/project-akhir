@@ -23,31 +23,6 @@
                     </select>
                 </div>
 
-                @push('scripts')
-                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                <script>
-                    $('#beasiswa').on('change', function() {
-                        var beasiswaID = $(this).val();
-
-                        if (beasiswaID) {
-                            $.ajax({
-                                url: '/get-kriteria/' + beasiswaID,
-                                type: 'GET',
-                                dataType: 'json',
-                                success: function(data) {
-                                    $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
-                                    $.each(data, function(key, value) {
-                                        $('#kriteria_id').append('<option value="' + value.id + '">' + value.kriteria + '</option>');
-                                    });
-                                }
-                            });
-                        } else {
-                            $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
-                        }
-                    });
-                </script>
-                @endpush
-
                 <div class="flex flex-col mb-4">
                     <label for="kriteria_id" class="text-sm font-medium text-black-700 text-[16px] mb-2">Kriteria</label>
                     <select id="kriteria_id" name="kriteria_id" class="w-full p-3 border rounded-lg shadow-sm" required>
@@ -106,7 +81,7 @@
             </thead>
             <tbody>
                 @foreach ($subKriterias as $subKriteria)
-                <tr class="border-b">
+                <tr class="border-b" data-beasiswa="{{ strtolower($subKriteria->kriteria->jenisBeasiswa->nama ?? '') }}">
                     <td class="border px-6 py-2">{{ $loop->iteration }}</td>
                     <td class="border px-6 py-2">{{ $subKriteria->kriteria->jenisBeasiswa->nama ?? '-' }}</td>
                     <td class="border px-6 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
@@ -134,3 +109,73 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Load kriteria berdasarkan beasiswa yg dipilih di form
+        $('#beasiswa').on('change', function() {
+            var beasiswaID = $(this).val();
+
+            if (beasiswaID) {
+                $.ajax({
+                    url: '/get-kriteria/' + beasiswaID,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+                        $.each(data, function(key, value) {
+                            $('#kriteria_id').append('<option value="' + value.id + '">' + value.kriteria + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#kriteria_id').empty().append('<option value="">Pilih Kriteria</option>');
+            }
+        });
+
+        // Fungsi filter tabel berdasarkan jenis beasiswa
+        function filterTable(beasiswa) {
+            if(beasiswa === '') {
+                $('tbody tr').show();
+            } else {
+                $('tbody tr').each(function() {
+                    const jenis = $(this).data('beasiswa');
+                    if(jenis === beasiswa) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        }
+
+        // Set tombol aktif
+        function setActiveButton(beasiswa) {
+            $('#kipk-btn, #tahfiz-btn').removeClass('bg-blue-800').addClass('bg-gray-400');
+            if(beasiswa === 'kip-k') {
+                $('#kipk-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
+            } else if(beasiswa === 'tahfiz') {
+                $('#tahfiz-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
+            }
+        }
+
+        // Event klik tombol KIP-K
+        $('#kipk-btn').click(function() {
+            filterTable('kip-k');
+            setActiveButton('kip-k');
+        });
+
+        // Event klik tombol Tahfiz
+        $('#tahfiz-btn').click(function() {
+            filterTable('tahfiz');
+            setActiveButton('tahfiz');
+        });
+
+        // Default aktif KIP-K saat load
+        filterTable('kip-k');
+        setActiveButton('kip-k');
+    });
+</script>
+@endpush
