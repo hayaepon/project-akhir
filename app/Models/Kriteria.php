@@ -10,7 +10,7 @@ class Kriteria extends Model
     use HasFactory;
 
     // Sesuaikan fillable dengan nama kolom di database
-    protected $fillable = ['jenis_beasiswa_id', 'kriteria', 'bobot'];
+    protected $fillable = ['jenis_beasiswa_id', 'kriteria', 'bobot', 'atribut'];
 
     public function jenisBeasiswa()
     {

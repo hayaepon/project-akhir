@@ -24,12 +24,14 @@ class KriteriaController extends Controller
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
             'kriteria' => 'required|string|max:255',
             'bobot' => 'required|numeric|min:0|max:100',
+            'atribut' => 'required|in:benefit,cost',
         ]);
 
         Kriteria::create([
             'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
             'kriteria' => $request->kriteria,
-            'bobot' => $request->bobot / 100, // konversi ke pecahan desimal
+            'bobot' => $request->bobot / 100, 
+            'atribut' => $request->atribut,
         ]);
 
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil ditambahkan.');
@@ -48,6 +50,7 @@ class KriteriaController extends Controller
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
             'kriteria' => 'required|string|max:255',
             'bobot' => 'required|numeric|min:0|max:100',
+            'atribut' => 'required|in:benefit,cost',
         ]);
 
         $kriteria = Kriteria::findOrFail($id);
@@ -56,6 +59,7 @@ class KriteriaController extends Controller
             'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
             'kriteria' => $request->kriteria,
             'bobot' => $request->bobot / 100,
+            'atribut' => $request->atribut, 
         ]);
 
         return redirect()->route('kriteria.index')->with('success', 'Kriteria berhasil diperbarui.');
