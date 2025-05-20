@@ -66,6 +66,13 @@ Route::middleware('auth')->group(function () {
 
     // Admin Perhitungan SMART
     Route::get('/admin/perhitungan_smart', [SmartCalculationController::class, 'index'])->name('admin.perhitungan_smart.index');
+    Route::post('/admin/perhitungan_smart', [SmartCalculationController::class, 'index'])->name('admin.perhitungan_smart.store');
+    Route::get('/admin/perhitungan-smart/kriteria/{id}', [SmartCalculationController::class, 'getKriteriaByBeasiswa']);
+    Route::get('/admin/perhitungan-smart/kriteria/{id}', [SmartCalculationController::class, 'getKriteria']);
+    Route::get('/perhitungan-smart/kriteria/{beasiswa}', [SmartCalculationController::class, 'getKriteria'])
+    ->name('admin.perhitungan_smart.getKriteria');
+
+
 });
 
 use App\Http\Controllers\SuperAdmin\BeasiswaController;
