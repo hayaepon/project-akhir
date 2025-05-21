@@ -34,8 +34,6 @@ class SmartCalculationController extends Controller
         ));
     }
 
-
-
     public function getKriteriaByBeasiswa($jenis_beasiswa_id)
     {
         // API endpoint untuk fetch kriteria & subkriteria sesuai beasiswa (AJAX)
@@ -51,30 +49,27 @@ class SmartCalculationController extends Controller
             'calon_penerima_id' => 'required|exists:calon_penerimas,id',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
             'nilai_kriteria' => 'required|array',
-            'nilai_kriteria.*' => 'required|numeric',
+            'nilai_kriteria.*' => 'required|string', // bisa juga 'numeric' jika nilai langsung
         ]);
 
-        // Cek apakah data sudah ada
-        $existing = HitunganSmart::where('calon_penerima_id', $validated['calon_penerima_id'])
+        // Pastikan tidak ada data duplikat untuk calon & beasiswa yang sama
+        $exists = HitunganSmart::where('calon_penerima_id', $validated['calon_penerima_id'])
             ->where('jenis_beasiswa_id', $validated['jenis_beasiswa_id'])
-            ->first();
+            ->exists();
 
-        if ($existing) {
-            return redirect()->back()->with('error', 'Data perhitungan untuk calon dan beasiswa ini sudah ada.');
+        if ($exists) {
+            return redirect()->back()->with('error', 'Data untuk calon penerima dan jenis beasiswa ini sudah ada.');
         }
 
-        // Simpan data
+        // Simpan ke tabel hitungan_smarts
         HitunganSmart::create([
             'calon_penerima_id' => $validated['calon_penerima_id'],
             'jenis_beasiswa_id' => $validated['jenis_beasiswa_id'],
-            'nilai_kriteria' => $validated['nilai_kriteria'], // otomatis disimpan sebagai JSON
+            'nilai_kriteria' => $validated['nilai_kriteria'], // sudah dalam bentuk array
         ]);
 
-        return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data perhitungan berhasil disimpan.');
+        return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data berhasil disimpan.');
     }
-
-
-
 
 
     public function getKriteria($jenis_beasiswa_id)

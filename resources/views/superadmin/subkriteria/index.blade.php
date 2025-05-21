@@ -62,7 +62,7 @@
             <!-- Tombol Switch KIP-K & Tahfiz di kanan -->
             <div class="flex space-x-4">
                 <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
-                <button id="tahfiz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfiz</button>
+                <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
             </div>
         </div>
 
@@ -153,11 +153,11 @@
 
         // Set tombol aktif
         function setActiveButton(beasiswa) {
-            $('#kipk-btn, #tahfiz-btn').removeClass('bg-blue-800').addClass('bg-gray-400');
+            $('#kipk-btn, #tahfidz-btn').removeClass('bg-blue-800').addClass('bg-gray-400');
             if(beasiswa === 'kip-k') {
                 $('#kipk-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
-            } else if(beasiswa === 'tahfiz') {
-                $('#tahfiz-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
+            } else if(beasiswa === 'tahfidz') {
+                $('#tahfidz-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
             }
         }
 
@@ -168,9 +168,9 @@
         });
 
         // Event klik tombol Tahfiz
-        $('#tahfiz-btn').click(function() {
-            filterTable('tahfiz');
-            setActiveButton('tahfiz');
+        $('#tahfidz-btn').click(function() {
+            filterTable('tahfizd');
+            setActiveButton('tahfizd');
         });
 
         // Default aktif KIP-K saat load
