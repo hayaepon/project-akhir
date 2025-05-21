@@ -62,7 +62,7 @@
             <!-- Tombol Switch KIP-K & Tahfiz di kanan -->
             <div class="flex space-x-4">
                 <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
-                <button id="tahfiz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfiz</button>
+                <button id="tahfiz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
             </div>
         </div>
 
