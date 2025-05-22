@@ -36,6 +36,8 @@ Route::prefix('superadmin')->middleware('auth')->group(function () {
 
     // Super Admin Subkriteria
     Route::resource('subkriteria', SubkriteriaController::class);
+    Route::get('/superadmin/subkriteria/get-kriteria/{id}', [SubkriteriaController::class, 'getKriteriaByBeasiswa']);
+
 
     // Super Admin Perhitungan SMART
     Route::get('/perhitungan-smart', [PerhitunganSmartController::class, 'index'])->name('perhitungan-smart.index');
