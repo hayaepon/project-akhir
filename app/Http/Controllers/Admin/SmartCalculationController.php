@@ -8,6 +8,7 @@ use App\Models\CalonPenerima;
 use App\Models\JenisBeasiswa;
 use App\Models\Kriteria;
 use App\Models\HitunganSmart;
+
 class SmartCalculationController extends Controller
 {
     public function index()
@@ -71,16 +72,45 @@ class SmartCalculationController extends Controller
         return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data berhasil disimpan.');
     }
 
-
-    public function getKriteria($jenis_beasiswa_id)
+    // Menampilkan form Edit untuk perhitungan SMART
+    public function edit($id)
     {
-        $kriterias = Kriteria::with('subkriterias')
-            ->where('jenis_beasiswa_id', $jenis_beasiswa_id)
-            ->get();
+        // Ambil data perhitungan berdasarkan ID
+        $perhitungan = HitunganSmart::findOrFail($id);
+        $calonPenerimas = CalonPenerima::all();
+        $jenisBeasiswas = JenisBeasiswa::with('kriterias.subkriterias')->get();
 
-        return response()->json($kriterias);
+        // Ambil nilai kriteria yang sudah ada
+        $nilaiKriteria = $perhitungan->nilai_kriteria;
+
+        return view('admin.perhitungan_smart.edit', compact('perhitungan', 'calonPenerimas', 'jenisBeasiswas', 'nilaiKriteria'));
     }
 
+    // Mengupdate data perhitungan SMART
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'calon_penerima_id' => 'required|exists:calon_penerimas,id',
+            'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
+            'nilai_kriteria' => 'required|array',
+            'nilai_kriteria.*' => 'required|string', // bisa juga 'numeric' jika nilai langsung
+        ]);
+
+        // Cari data perhitungan berdasarkan ID
+        $perhitungan = HitunganSmart::findOrFail($id);
+
+        // Update data perhitungan
+        $perhitungan->update([
+            'calon_penerima_id' => $validated['calon_penerima_id'],
+            'jenis_beasiswa_id' => $validated['jenis_beasiswa_id'],
+            'nilai_kriteria' => $validated['nilai_kriteria'], // update nilai kriteria
+        ]);
+
+        return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data perhitungan SMART berhasil diperbarui.');
+    }
+
+    // Menghapus data perhitungan SMART
     public function destroy($id)
     {
         $hitungan = HitunganSmart::findOrFail($id);
@@ -88,8 +118,4 @@ class SmartCalculationController extends Controller
 
         return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data perhitungan berhasil dihapus.');
     }
-
-
-
-
 }

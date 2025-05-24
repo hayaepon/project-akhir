@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/perhitungan-smart/kriteria/{id}', [SmartCalculationController::class, 'getKriteriaByBeasiswa']);
     Route::get('/admin/perhitungan-smart/kriteria/{jenis_beasiswa_id}', [SmartCalculationController::class, 'getKriteriaByBeasiswa'])->name('admin.perhitungan_smart.kriteria');
     Route::get('/admin/perhitungan-smart/kriteria/{id}', [SmartCalculationController::class, 'getKriteria']);
+    Route::get('/perhitungan_smart/{id}/edit', [SmartCalculationController::class, 'edit'])->name('admin.perhitungan_smart.edit');
+    Route::put('/perhitungan_smart/{id}', [SmartCalculationController::class, 'update'])->name('admin.perhitungan_smart.update');
     Route::get('/perhitungan-smart/kriteria/{beasiswa}', [SmartCalculationController::class, 'getKriteria'])
     ->name('admin.perhitungan_smart.getKriteria');
 });

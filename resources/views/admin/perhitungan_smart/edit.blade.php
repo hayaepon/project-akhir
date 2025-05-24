@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Perhitungan SMART')
+@section('title', 'Edit Perhitungan SMART')
 
 @section('content')
 <div class="container mx-auto px-4 py-6 min-h-screen">
     <div class="bg-white p-6 rounded shadow">
-        <h3 class="text-2xl font-semibold mb-4">Perhitungan SMART</h3>
+        <h3 class="text-2xl font-semibold mb-4">Edit Perhitungan SMART</h3>
 
         @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -19,9 +19,10 @@
         </div>
         @endif
 
-        <!-- Form Perhitungan SMART -->
-        <form action="{{ route('admin.perhitungan_smart.store') }}" method="POST" class="space-y-6">
+        <!-- Form Edit Perhitungan SMART -->
+        <form action="{{ route('admin.perhitungan_smart.update', $perhitungan->id) }}" method="POST" class="space-y-6">
             @csrf
+            @method('PUT')
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <!-- Nama Calon Penerima -->
                 <div class="flex flex-col">
@@ -29,7 +30,7 @@
                     <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
                         <option value="">Pilih Calon Penerima</option>
                         @foreach ($calonPenerimas as $calon)
-                        <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }}>
+                        <option value="{{ $calon->id }}" {{ $perhitungan->calon_penerima_id == $calon->id ? 'selected' : '' }}>
                             {{ $calon->nama_calon_penerima }}
                         </option>
                         @endforeach
@@ -45,7 +46,7 @@
                     <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
                         <option value="">Pilih Beasiswa</option>
                         @foreach ($jenisBeasiswas as $beasiswa)
-                        <option value="{{ $beasiswa->id }}" {{ old('jenis_beasiswa_id') == $beasiswa->id ? 'selected' : '' }}>
+                        <option value="{{ $beasiswa->id }}" {{ $perhitungan->jenis_beasiswa_id == $beasiswa->id ? 'selected' : '' }}>
                             {{ $beasiswa->nama }}
                         </option>
                         @endforeach
@@ -67,76 +68,6 @@
             </div>
         </form>
     </div>
-
-    <!-- Tabel Hasil Perhitungan -->
-    <div class="bg-white p-6 rounded shadow mt-10">
-        <h3 class="text-2xl font-semibold mb-4">Tabel Perhitungan SMART</h3>
-
-        <!-- Filter Beasiswa -->
-        <div class="flex gap-4 mb-4">
-            <button onclick="filterTable('KIP-K')" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">KIP-K</button>
-            <button onclick="filterTable('Tahfidz')" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Tahfidz</button>
-        </div>
-
-        <div class="overflow-auto">
-            <table class="min-w-full border border-gray-300 border-collapse" id="smartTable">
-                <thead class="bg-blue-700 text-white">
-                    <tr>
-                        <th class="border px-4 py-2 text-left">No</th>
-                        <th class="border px-4 py-2 text-left">Nama Calon</th>
-                        <th class="border px-4 py-2 text-left">Beasiswa</th>
-                        @if(count($headerKriteria ?? []))
-                        @foreach ($headerKriteria as $kriteria)
-                        <th class="border px-4 py-2 text-left">{{ $kriteria }}</th>
-                        @endforeach
-                        @else
-                        <th class="border px-4 py-2 text-left" colspan="3">Kriteria</th>
-                        @endif
-                        <th class="border px-4 py-2 text-left">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($hitunganSmarts as $perhitungan)
-                    <tr data-beasiswa="{{ strtolower(optional($perhitungan->jenisbeasiswa)->nama ?? '-') }}">
-                        <td class="border px-4 py-2">{{ $loop->iteration }}</td>
-                        <td class="border px-4 py-2">{{ $perhitungan->calonPenerima->nama_calon_penerima }}</td>
-                        <td class="border px-4 py-2">{{ optional($perhitungan->jenisbeasiswa)->nama ?? '-' }}</td>
-
-                        @php
-                        $nilai = $perhitungan->nilai_kriteria;
-                        @endphp
-                        @foreach ($headerKriteria as $index => $kriteria)
-                        <td class="border px-4 py-2">{{ $nilai[$index] ?? '-' }}</td>
-                        @endforeach
-
-                        <td class="border px-4 py-2">
-                            <div class="flex justify-center space-x-3">
-                                <!-- Tombol Edit -->
-                                <a href="{{ route('admin.perhitungan_smart.edit', $perhitungan->id) }}" class="text-yellow-500 hover:text-yellow-700">
-                                    <i class="fas fa-edit text-yellow-300"></i>
-                                </a>
-                                <span class="text-gray-400">|</span>
-                                <!-- Tombol Hapus -->
-                                <form action="{{ route('admin.perhitungan_smart.destroy', $perhitungan->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:text-red-800">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="{{ 4 + count($headerKriteria ?? [1, 2, 3]) }}" class="text-center text-gray-600 py-4">Belum ada data.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 {{-- Script: Load Kriteria --}}
@@ -149,7 +80,7 @@
             kriteriaContainer.innerHTML = '';
         }
 
-        function createKriteriaInput(kriteria) {
+        function createKriteriaInput(kriteria, selectedNilai) {
             const wrapper = document.createElement('div');
             wrapper.classList.add('flex', 'flex-col');
 
@@ -174,6 +105,7 @@
                 const option = document.createElement('option');
                 option.value = sub.sub_kriteria;
                 option.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
+                option.selected = sub.sub_kriteria === selectedNilai;
                 select.appendChild(option);
             });
 
@@ -190,7 +122,8 @@
                         kriteriaContainer.innerHTML = '<p class="text-gray-500">Tidak ada kriteria untuk beasiswa ini.</p>';
                     } else {
                         data.forEach(kriteria => {
-                            const input = createKriteriaInput(kriteria);
+                            const selectedNilai = @json($perhitungan->nilai_kriteria ?? []);
+                            const input = createKriteriaInput(kriteria, selectedNilai[kriteria.id]);
                             kriteriaContainer.appendChild(input);
                         });
                     }
@@ -206,26 +139,9 @@
             else clearKriteria();
         });
 
-        @if(old('jenis_beasiswa_id'))
-        loadKriteria({
-            {
-                old('jenis_beasiswa_id')
-            }
-        });
+        @if($perhitungan->jenis_beasiswa_id)
+        loadKriteria({{ $perhitungan->jenis_beasiswa_id }});
         @endif
     });
-
-    // Script Filter Tabel Berdasarkan Beasiswa
-    function filterTable(beasiswa) {
-        const rows = document.querySelectorAll('#smartTable tbody tr');
-        rows.forEach(row => {
-            const jenis = row.getAttribute('data-beasiswa') || '';
-            if (beasiswa === 'all') {
-                row.style.display = '';
-            } else {
-                row.style.display = (jenis.toLowerCase().includes(beasiswa.toLowerCase())) ? '' : 'none';
-            }
-        });
-    }
 </script>
 @endsection
