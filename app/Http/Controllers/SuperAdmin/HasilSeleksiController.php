@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Models\HasilSeleksi;
 use App\Http\Controllers\Controller;
-use Barryvdh\DomPDF\Facade\Pdf; // 
+use Barryvdh\DomPDF\Facade\Pdf; 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Http\Response;
