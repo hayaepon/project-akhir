@@ -20,7 +20,7 @@
         @endif
 
         <!-- Form Edit Perhitungan SMART -->
-        <form action="{{ route('admin.perhitungan_smart.update', $perhitungan->id) }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.perhitungan_smart.update', $HitunganSmart->id) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -30,7 +30,7 @@
                     <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
                         <option value="">Pilih Calon Penerima</option>
                         @foreach ($calonPenerimas as $calon)
-                        <option value="{{ $calon->id }}" {{ $perhitungan->calon_penerima_id == $calon->id ? 'selected' : '' }}>
+                        <option value="{{ $calon->id }}" {{ $HitunganSmart->calon_penerima_id == $calon->id ? 'selected' : '' }}>
                             {{ $calon->nama_calon_penerima }}
                         </option>
                         @endforeach
@@ -46,7 +46,7 @@
                     <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
                         <option value="">Pilih Beasiswa</option>
                         @foreach ($jenisBeasiswas as $beasiswa)
-                        <option value="{{ $beasiswa->id }}" {{ $perhitungan->jenis_beasiswa_id == $beasiswa->id ? 'selected' : '' }}>
+                        <option value="{{ $beasiswa->id }}" {{ $HitunganSmart->jenis_beasiswa_id == $beasiswa->id ? 'selected' : '' }}>
                             {{ $beasiswa->nama }}
                         </option>
                         @endforeach
@@ -139,8 +139,8 @@
             else clearKriteria();
         });
 
-        @if($perhitungan->jenis_beasiswa_id)
-        loadKriteria({{ $perhitungan->jenis_beasiswa_id }});
+        @if($HitunganSmart->jenis_beasiswa_id)
+        loadKriteria({{ $HitunganSmart->jenis_beasiswa_id }});
         @endif
     });
 </script>
