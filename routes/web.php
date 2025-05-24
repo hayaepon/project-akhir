@@ -45,6 +45,7 @@ Route::prefix('superadmin')->middleware('auth')->group(function () {
 
     // Super Admin Hasil Seleksi
     Route::get('/hasil-seleksi', [HasilSeleksiController::class, 'index'])->name('hasil-seleksi.index');
+    Route::get('/hasil-seleksi/export', [HasilSeleksiController::class, 'export'])->name('hasil-seleksi.export');
 
     // Super Admin Manajemen Akun Admin
     Route::resource('manajemen_admin', AdminController::class)->except(['show']);
