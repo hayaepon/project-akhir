@@ -71,43 +71,35 @@
                     </div>
 
                     <!-- Tabel Hasil Perhitungan -->
-                    <div class="bg-white p-6 rounded shadow mt-10">
+                    <div class="bg-white p-6 rounded shadow">
                         <h3 class="text-2xl font-semibold mb-4">Tabel Perhitungan SMART</h3>
 
-                        <!-- Filter Beasiswa -->
-                        <div class="flex gap-4 mb-4">
-                            <button onclick="filterTable('KIP-K')"
-                                class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">KIP-K</button>
-                            <button onclick="filterTable('Tahfidz')"
-                                class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Tahfidz</button>
-                        </div>
-
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto h-96">
                             <table id="smartTable" class="min-w-full table-auto border-collapse border border-gray-300">
-                                <thead class="bg-blue-700 text-white">
+                                <thead class="bg-blue-800 text-white">
                                     <tr>
-                                        <th class="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">No</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">Nama Calon</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-left whitespace-nowrap">Beasiswa</th>
+                                        <th class="border px-4 py-2 text-left font-normal">No</th>
+                                        <th class="border px-4 py-2 text-left font-normal">Nama Calon</th>
+                                        <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
                                         @foreach ($headerKriteria as $namaKriteria)
-                                            <th class="border border-gray-300 px-4 py-2 text-center whitespace-nowrap">{{ $namaKriteria }}</th>
+                                            <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
                                         @endforeach
-                                        <th class="border border-gray-300 px-4 py-2 text-center whitespace-nowrap">Aksi</th>
+                                        <th class="border px-4 py-2 text-left font-normalp">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($hitunganSmarts as $i => $item)
                                         <tr data-beasiswa="{{ $item->jenisBeasiswa->nama }}" class="even:bg-gray-50 hover:bg-gray-100">
-                                            <td class="border border-gray-300 px-4 py-2 text-left">{{ $i + 1 }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-left">
+                                            <td class="border px-4 py-2 text-left">{{ $i + 1 }}</td>
+                                            <td class="border px-4 py-2 text-left">
                                                 {{ $item->calonPenerima->nama_calon_penerima }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
+                                            <td class="border px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
                                             @foreach (array_keys($headerKriteria) as $idKriteria)
-                                                <td class="border border-gray-300 px-4 py-2 text-center">
+                                                <td class="border px-4 py-2 text-center">
                                                     {{ $item->nilai_kriteria[$idKriteria] ?? '-' }}
                                                 </td>
                                             @endforeach
-                                            <td class="border border-gray-300 px-4 py-2 text-center">
+                                            <td class="border px-4 py-2 text-center">
                                                 <div class="flex justify-center space-x-3">
                                                     <!-- Tombol Edit -->
                                                     <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}"
