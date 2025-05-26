@@ -71,13 +71,13 @@
 
         <table class="min-w-full mt-6 table-auto">
             <thead>
-                <tr class="bg-blue-800 text-white font-medium">
-                    <th class="border px-6 py-2 text-left">No</th>
-                    <th class="border px-6 py-2 text-left">Beasiswa</th>
-                    <th class="border px-6 py-2 text-left">Kriteria</th>
-                    <th class="border px-6 py-2 text-left">Sub Kriteria</th>
-                    <th class="border px-6 py-2 text-left">Nilai</th>
-                    <th class="border px-6 py-2 text-left">Aksi</th>
+                <tr class="bg-blue-800 text-white">
+                    <th class="border px-6 py-2 text-left font-normal">No</th>
+                    <th class="border px-6 py-2 text-left font-normal">Beasiswa</th>
+                    <th class="border px-6 py-2 text-left font-normal">Kriteria</th>
+                    <th class="border px-6 py-2 text-left font-normal">Sub Kriteria</th>
+                    <th class="border px-6 py-2 text-left font-normal">Nilai</th>
+                    <th class="border px-6 py-2 text-left font-normal">Aksi</th>
                 </tr>
             </thead>
             <tbody>
