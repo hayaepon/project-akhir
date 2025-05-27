@@ -18,17 +18,18 @@ class HitunganSmart extends Model
     ];
 
     protected $casts = [
-        'nilai_kriteria' => 'array', // agar bisa disimpan dan dibaca sebagai JSON
+        'nilai_kriteria' => 'array',
     ];
 
+    // PerhitunganSmart.php (Model)
     public function calonPenerima()
     {
-        return $this->belongsTo(CalonPenerima::class);
+        return $this->belongsTo(CalonPenerima::class, 'calon_penerima_id');
     }
 
     public function jenisBeasiswa()
     {
-        return $this->belongsTo(JenisBeasiswa::class);
+        return $this->belongsTo(JenisBeasiswa::class, 'jenis_beasiswa_id');
     }
 
 }

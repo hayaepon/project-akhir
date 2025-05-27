@@ -27,13 +27,11 @@ class SubkriteriaController extends Controller
             'nilai' => 'required|numeric'
         ]);
 
-        // Ambil kriteria yang dipilih untuk mengambil jenis_beasiswa_id-nya
         $kriteria = Kriteria::findOrFail($request->kriteria_id);
 
-        // Simpan data subkriteria beserta jenis_beasiswa_id
         Subkriteria::create([
             'kriteria_id' => $request->kriteria_id,
-            'jenis_beasiswa_id' => $kriteria->jenis_beasiswa_id, // tambahkan ini
+            'jenis_beasiswa_id' => $kriteria->jenis_beasiswa_id,
             'sub_kriteria' => $request->sub_kriteria,
             'nilai' => $request->nilai,
         ]);
@@ -41,22 +39,28 @@ class SubkriteriaController extends Controller
         return redirect()->route('subkriteria.index')->with('success', 'Sub Kriteria berhasil ditambahkan');
     }
 
-
     public function edit($id)
     {
-        $subkriteria = Subkriteria::findOrFail($id);
-        return view('superadmin.subkriteria.edit', compact('subkriteria'));
+        $subKriteria = Subkriteria::findOrFail($id);
+        $jenisBeasiswas = JenisBeasiswa::all();
+        $kriterias = Kriteria::where('jenis_beasiswa_id', $subKriteria->jenis_beasiswa_id)->get();
+
+        return view('superadmin.subkriteria.edit', compact('subKriteria', 'kriterias', 'jenisBeasiswas'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
+            'kriteria_id' => 'required|exists:kriterias,id',
             'sub_kriteria' => 'required|string',
             'nilai' => 'required|numeric',
+            'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
         $subkriteria = Subkriteria::findOrFail($id);
         $subkriteria->update([
+            'kriteria_id' => $request->kriteria_id,
+            'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
             'sub_kriteria' => $request->sub_kriteria,
             'nilai' => $request->nilai,
         ]);

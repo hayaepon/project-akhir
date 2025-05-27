@@ -16,7 +16,7 @@
 
                 <!-- Dropdown Pilihan Format (PDF/Excel) -->
                 <div id="exportDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
-                    <form action="#" method="GET">
+                    <form action="{{ route('hasil-seleksi.export') }}" method="GET">
                         @csrf
                         <button type="submit" name="format" value="pdf" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Export as PDF</button>
                         <button type="submit" name="format" value="excel" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200">Export as Excel</button>
