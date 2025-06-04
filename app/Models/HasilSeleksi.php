@@ -20,5 +20,16 @@ class HasilSeleksi extends Model
         'hasil',
         'keterangan',
     ];
+
+    public function calonPenerima()
+    {
+        return $this->belongsTo(\App\Models\CalonPenerima::class);
+    }
+
+    public function jenisBeasiswa()
+    {
+        return $this->belongsTo(\App\Models\JenisBeasiswa::class);
+    }
+
 }
 

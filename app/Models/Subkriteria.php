@@ -22,4 +22,12 @@ class Subkriteria extends Model
     {
         return $this->belongsTo(Kriteria::class);
     }
+
+    public function calonPenerimas()
+    {
+        return $this->belongsToMany(CalonPenerima::class, 'calon_penerima_subkriteria')
+            ->withPivot('nilai', 'kriteria_id')
+            ->withTimestamps();
+    }
+
 }

@@ -13,7 +13,34 @@ class CalonPenerima extends Model
         'no_pendaftaran',
         'nama_calon_penerima',
         'asal_sekolah',
-        'pilihan_beasiswa',
+        'jenis_beasiswa_id',
     ];
+
+    public function jenisBeasiswa()
+    {
+        return $this->belongsTo(JenisBeasiswa::class, 'jenis_beasiswa_id');
+    }
+
+    public function subkriterias()
+    {
+        return $this->belongsToMany(Subkriteria::class, 'calon_penerima_subkriteria')
+            ->withPivot('nilai', 'kriteria_id')
+            ->withTimestamps();
+    }
+
+    public function subkriteriasTerpilih()
+    {
+        return $this->hasMany(CalonPenerimaSubkriteria::class);
+    }
+
+
+
 }
+
+    //public function nilaiKriterias()
+    //{
+    //    return $this->hasMany(NilaiKriteria::class, 'calon_penerima_id');
+    //}
+
+
 

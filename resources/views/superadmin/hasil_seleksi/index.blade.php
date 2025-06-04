@@ -4,17 +4,13 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6 h-screen">
-    <!-- Hasil Seleksi -->
     <div class="bg-white p-6 rounded-lg mb-2">
-        <div class="flex justify-between items-center mb-4 space-x-4"> <!-- Posisikan tombol di kanan -->
-            <!-- Tombol Export dengan Dropdown -->
+        <div class="flex justify-between items-center mb-4 space-x-4">
+            <!-- Tombol Export -->
             <div class="relative">
-                <!-- Tombol Export PDF/Excel -->
                 <button id="exportButton" class="flex items-center bg-red-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-red-600 transition duration-300">
                     <i class="fas fa-file-export mr-2"></i> Export
                 </button>
-
-                <!-- Dropdown Pilihan Format (PDF/Excel) -->
                 <div id="exportDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
                     <form action="{{ route('hasil-seleksi.export') }}" method="GET">
                         @csrf
@@ -24,15 +20,13 @@
                 </div>
             </div>
 
-            <!-- Tombol Filter dengan Ikon dan Dropdown -->
+            <!-- Tombol Filter -->
             <div class="relative">
                 <button id="filterButton" class="flex items-center bg-blue-800 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
                     <i class="fas fa-filter mr-2"></i> Filters
                 </button>
-
-                <!-- Dropdown Filter -->
                 <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
-                    <form action="#" method="GET" id="filterForm">
+                    <form action="{{ route('hasil-seleksi.index') }}" method="GET" id="filterForm">
                         @csrf
                         <select name="beasiswa" class="w-full p-2 border border-gray-300 rounded-lg" onchange="document.getElementById('filterForm').submit()">
                             <option value="">Filter Beasiswa</option>
@@ -44,7 +38,7 @@
             </div>
         </div>
 
-        <!-- Tabel Hasil Seleksi dengan Scroll -->
+        <!-- Tabel Hasil Seleksi -->
         <div class="overflow-x-auto mt-4">
             <div class="flex flex-col max-h-[400px] overflow-y-auto">
                 <table class="min-w-full table-auto border-collapse">
@@ -52,25 +46,28 @@
                         <tr class="bg-blue-800 text-white">
                             <th class="border px-4 py-2 text-left font-normal">No</th>
                             <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
-                            <th class="border px-4 py-2 text-left font-normal">Kriteria 1</th>
-                            <th class="border px-4 py-2 text-left font-normal">Kriteria 2</th>
-                            <th class="border px-4 py-2 text-left font-normal">Kriteria 3</th>
-                            <th class="border px-4 py-2 text-left font-normal">Kriteria 4</th>
+                            @foreach($kriterias as $kriteria)
+                                <th class="border px-4 py-2 text-left font-normal">{{ $kriteria->nama_kriteria }}</th>
+                            @endforeach
                             <th class="border px-4 py-2 text-left font-normal">Hasil</th>
                             <th class="border px-4 py-2 text-left font-normal">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($hasilSeleksi as $data)
+                            @php
+                                $nilaiKriteria = json_decode($data->nilai_kriteria, true);
+                            @endphp
                             <tr class="bg-white">
-                                <td class="border px-4 py-2 text-left font-normal">{{ $loop->iteration }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->nama_calon_penerima }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->nilai_kriteria1 }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->nilai_kriteria2 }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->nilai_kriteria3 }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->nilai_kriteria4 }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->hasil }}</td>
-                                <td class="border px-4 py-2 text-left font-normal">{{ $data->keterangan }}</td>
+                                <td class="border px-4 py-2">{{ $loop->iteration }}</td>
+                                <td class="border px-4 py-2">{{ $data->calonPenerimas->nama_calon_penerima ?? '-' }}</td>
+                                @foreach($kriterias as $kriteria)
+                                    <td class="border px-4 py-2">
+                                        {{ $nilaiKriteria[$kriteria->id] ?? 0 }}
+                                    </td>
+                                @endforeach
+                                <td class="border px-4 py-2">{{ $data->hasil }}</td>
+                                <td class="border px-4 py-2">{{ $data->keterangan ?? '-' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -80,38 +77,28 @@
     </div>
 </div>
 
-<!-- JavaScript untuk Menampilkan/menyembunyikan Dropdown -->
+<!-- Script Dropdown -->
 <script>
-    // Menampilkan/Menyembunyikan Dropdown Export
-    document.getElementById('exportButton').addEventListener('click', function() {
+    document.getElementById('exportButton').addEventListener('click', function () {
         var dropdown = document.getElementById('exportDropdown');
         dropdown.classList.toggle('hidden');
     });
 
-    // Menutup dropdown jika klik di luar area filter
-    window.addEventListener('click', function(e) {
-        var dropdown = document.getElementById('exportDropdown');
-        var button = document.getElementById('exportButton');
-        
-        if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+    window.addEventListener('click', function (e) {
+        if (!document.getElementById('exportButton').contains(e.target) &&
+            !document.getElementById('exportDropdown').contains(e.target)) {
+            document.getElementById('exportDropdown').classList.add('hidden');
+        }
+
+        if (!document.getElementById('filterButton').contains(e.target) &&
+            !document.getElementById('filterDropdown').contains(e.target)) {
+            document.getElementById('filterDropdown').classList.add('hidden');
         }
     });
 
-    // Menampilkan/Menyembunyikan Dropdown Filter
-    document.getElementById('filterButton').addEventListener('click', function() {
-        var filterDropdown = document.getElementById('filterDropdown');
-        filterDropdown.classList.toggle('hidden');
-    });
-
-    // Menutup dropdown jika klik di luar area filter
-    window.addEventListener('click', function(e) {
-        var filterDropdown = document.getElementById('filterDropdown');
-        var filterButton = document.getElementById('filterButton');
-        
-        if (!filterButton.contains(e.target) && !filterDropdown.contains(e.target)) {
-            filterDropdown.classList.add('hidden');
-        }
+    document.getElementById('filterButton').addEventListener('click', function () {
+        var dropdown = document.getElementById('filterDropdown');
+        dropdown.classList.toggle('hidden');
     });
 </script>
 @endsection
