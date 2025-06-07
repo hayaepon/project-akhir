@@ -14,8 +14,11 @@ class SuperAdminDashboardController extends Controller
         // Data ringkasan
         $jumlahPendaftar = CalonPenerima::count();
         $jumlahJenisBeasiswa = JenisBeasiswa::count();
-        $jumlahKipk = CalonPenerima::where('pilihan_beasiswa', 'KIP-K')->count();
-        $jumlahTahfiz = CalonPenerima::where('pilihan_beasiswa', 'Tahfiz')->count();
+        $kipkId = JenisBeasiswa::where('nama', 'KIP-K')->value('id');
+        $tahfidzId = JenisBeasiswa::where('nama', 'Tahfidz')->value('id');
+
+        $jumlahKipk = CalonPenerima::where('jenis_beasiswa_id', $kipkId)->count();
+        $jumlahTahfidz = CalonPenerima::where('jenis_beasiswa_id', $tahfidzId)->count();
         $jumlahLolos = HasilSeleksi::where('keterangan', 'lolos')->count();
 
         // Data grafik pendaftaran per tahun
@@ -36,7 +39,7 @@ class SuperAdminDashboardController extends Controller
             'jumlahPendaftar' => $jumlahPendaftar,
             'jumlahJenisBeasiswa' => $jumlahJenisBeasiswa,
             'jumlahKipk' => $jumlahKipk,
-            'jumlahTahfiz' => $jumlahTahfiz,
+            'jumlahTahfidz' => $jumlahTahfidz,
             'jumlahLolos' => $jumlahLolos,
             'grafikPendaftaran' => $grafikPendaftaran,
             'grafikLolos' => $grafikLolos,
