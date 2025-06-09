@@ -9,21 +9,17 @@ class HasilSeleksi extends Model
 {
     use HasFactory;
 
-    protected $table = 'hasil_seleksis';
-
     protected $fillable = [
-        'nama_calon_penerima',
-        'nilai_kriteria1',
-        'nilai_kriteria2',
-        'nilai_kriteria3',
-        'nilai_kriteria4',
+        'calon_penerima_id',
+        'jenis_beasiswa_id',
         'hasil',
+        'nilai_kriteria',
         'keterangan',
     ];
 
     public function calonPenerima()
     {
-        return $this->belongsTo(\App\Models\CalonPenerima::class);
+        return $this->belongsTo(CalonPenerima::class);
     }
 
     public function jenisBeasiswa()
