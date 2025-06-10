@@ -17,7 +17,7 @@
 </div>
 
 <!-- Ringkasan Data -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12 mb-12">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white p-6 rounded-lg shadow-md text-center relative">
         <div class="bg-blue-800 absolute inset-y-0 left-0 w-2 rounded-l-lg"></div>
         <div class="flex flex-col justify-center pl-4 w-full">
