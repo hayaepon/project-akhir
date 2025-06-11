@@ -1,17 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Superadmin;
+
 use App\Models\CalonPenerima;
+use App\Models\JenisBeasiswa;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\JenisBeasiswa;
 
 class CalonPenerimaController extends Controller
 {
     public function index()
     {
-        $jenisBeasiswas = JenisBeasiswa::all(); // ambil semua data beasiswa
-        $dataCalonPenerima = CalonPenerima::all(); // ambil semua data calon penerima
+        $jenisBeasiswas = JenisBeasiswa::all();
+        $dataCalonPenerima = CalonPenerima::with('jenisBeasiswa')->get(); // eager loading relasi
 
         return view('superadmin.calon_penerima.index', compact('jenisBeasiswas', 'dataCalonPenerima'));
     }
@@ -22,10 +23,15 @@ class CalonPenerimaController extends Controller
             'no_pendaftaran' => 'required|unique:calon_penerimas',
             'nama_calon_penerima' => 'required',
             'asal_sekolah' => 'required',
-            'pilihan_beasiswa' => 'required|in:KIP-K,Tahfidz',
+            'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
-        CalonPenerima::create($request->all());
+        CalonPenerima::create([
+            'no_pendaftaran' => $request->no_pendaftaran,
+            'nama_calon_penerima' => $request->nama_calon_penerima,
+            'asal_sekolah' => $request->asal_sekolah,
+            'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
+        ]);
 
         return redirect()->route('calon-penerima.index')->with('success', 'Data berhasil ditambahkan');
     }
@@ -33,7 +39,9 @@ class CalonPenerimaController extends Controller
     public function edit($id)
     {
         $data = CalonPenerima::findOrFail($id);
-        return view('superadmin.calon_penerima.edit', compact('data'));
+        $jenisBeasiswas = JenisBeasiswa::all();
+
+        return view('superadmin.calon_penerima.edit', compact('data', 'jenisBeasiswas'));
     }
 
     public function update(Request $request, $id)
@@ -44,10 +52,15 @@ class CalonPenerimaController extends Controller
             'no_pendaftaran' => 'required|unique:calon_penerimas,no_pendaftaran,' . $id,
             'nama_calon_penerima' => 'required',
             'asal_sekolah' => 'required',
-            'pilihan_beasiswa' => 'required|in:KIP-K,Tahfidz',
+            'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
-        $data->update($request->all());
+        $data->update([
+            'no_pendaftaran' => $request->no_pendaftaran,
+            'nama_calon_penerima' => $request->nama_calon_penerima,
+            'asal_sekolah' => $request->asal_sekolah,
+            'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
+        ]);
 
         return redirect()->route('calon-penerima.index')->with('success', 'Data berhasil diupdate');
     }

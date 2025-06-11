@@ -20,7 +20,6 @@
                     <th class="border px-4 py-2 text-left font-normal">No</th>
                     <th class="border px-4 py-2 text-left font-normal">Nama</th>
                     <th class="border px-4 py-2 text-left font-normal">Email</th>
-                    <th class="border px-4 py-2 text-left font-normal">Password</th>
                     <th class="border px-4 py-2 text-left font-normal">Role</th>
                     <th class="border px-4 py-2 text-left font-normal">Aksi</th>
                 </tr>
@@ -31,7 +30,6 @@
                     <td class="border px-4 py-2">{{ $index + 1 }}</td>
                     <td class="border px-4 py-2">{{ $admin->name }}</td>
                     <td class="border px-4 py-2">{{ $admin->email }}</td>
-                    <td class="border px-4 py-2">{{ $admin->password }}</td>
                     <td class="border px-4 py-2">{{ $admin->role }}</td>
                     <td class="border px-4 py-2">
                         <div class="flex items-center">

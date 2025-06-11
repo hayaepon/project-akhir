@@ -10,6 +10,8 @@ class CalonPenerimaAdminController extends Controller
     public function index()
 {
     $calonPenerimas = CalonPenerima::all();
+    $calonPenerimas = CalonPenerima::with('jenisBeasiswa')->get();
+
     return view('admin.calon_penerima.index', compact('calonPenerimas'));
 }
 
