@@ -21,7 +21,7 @@
 
 
         <!-- Menu Kriteria & Bobot dengan Dropdown -->
-        <div x-data="{ open: false }">
+        <!-- <div x-data="{ open: false }">
             <button @click.prevent="open = !open" class="w-full flex items-center justify-between py-2 px-3 rounded hover:bg-blue-700">
                 <div class="flex items-center space-x-3">
                     <i data-lucide="layers" class="w-5 h-5"></i>
@@ -30,7 +30,7 @@
                 <i data-lucide="chevron-down" :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform"></i>
             </button>
 
-            <!-- Dropdown Submenu -->
+            Dropdown Submenu 
             <div x-show="open" x-transition class="ml-6 mt-2 space-y-2" x-cloak>
             <a href="{{ route('admin.kriteria.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 text-white">
                 <i data-lucide="sliders" class="w-5 h-5"></i>
@@ -43,12 +43,12 @@
             </a>
 
             </div>
-        </div>
+        </div>-->
 
         <!-- Menu Perhitungan SMART -->
         <a href="{{ route('admin.perhitungan_smart.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 cursor-pointer text-white">
             <i data-lucide="calculator" class="w-5 h-5"></i>
-            <span>Perhitungan SMART</span>
+            <span>Pertanyaan Wawancara</span>
         </a>
 
 

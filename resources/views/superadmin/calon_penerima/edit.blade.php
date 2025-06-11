@@ -26,17 +26,23 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex flex-col">
                     <label for="asal_sekolah" class="text-sm font-medium text-black-700 text-[16px] mb-2">Asal Sekolah</label>
-                    <input type="text" id="asal_sekolah" name="asal_sekolah" class="w-full p-3 border rounded-lg shadow-sm" value="{{ old('asal_sekolah', $data->asal_sekolah) }}" required />
+                    <input type="text" id="asal_sekolah" name="asal_sekolah" class="w-full p-3 border rounded-lg shadow-sm"
+                        value="{{ old('asal_sekolah', $data->asal_sekolah) }}" required />
                 </div>
+
                 <div class="flex flex-col">
-                    <label for="pilihan_beasiswa" class="text-sm font-medium text-black-700 text-[16px] mb-2">Pilihan Beasiswa</label>
-                    <select id="pilihan_beasiswa" name="pilihan_beasiswa" class="w-full p-3 border rounded-lg shadow-sm" required>
-                        <option value="KIP-K" {{ $data->pilihan_beasiswa == 'KIP-K' ? 'selected' : '' }}>KIP-K</option>
-                        <option value="Tahfidz" {{ $data->pilihan_beasiswa == 'Tahfidz' ? 'selected' : '' }}>Tahfidz</option>
+                    <label for="jenis_beasiswa_id" class="text-sm font-medium text-black-700 text-[16px] mb-2">Jenis
+                        Beasiswa</label>
+                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="w-full p-3 border rounded-lg shadow-sm" required>
+                        <option value="">-- Pilih Jenis Beasiswa --</option>
+                        @foreach($jenisBeasiswas as $beasiswa)
+                            <option value="{{ $beasiswa->id }}" {{ $data->jenis_beasiswa_id == $beasiswa->id ? 'selected' : '' }}>
+                                {{ $beasiswa->nama }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-
             <div>
                 <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded-lg w-full sm:w-auto mt-6">Simpan</button>
             </div>

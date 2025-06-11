@@ -46,8 +46,8 @@
             <div class="text-blue-800 mb-2">
                 <i class="fas fa-book-open fa-2x"></i>
             </div>
-            <h3 class="text-2xl font-bold">{{ $jumlahTahfiz }}</h3>
-            <p class="text-gray-600">Pendaftar Tahfiz</p>
+            <h3 class="text-2xl font-bold">{{ $jumlahTahfidz }}</h3>
+            <p class="text-gray-600">Pendaftar Tahfidz</p>
         </div>
     </div>
 
