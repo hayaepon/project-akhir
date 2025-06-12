@@ -170,12 +170,12 @@
 
         // Event klik tombol Tahfiz
         $('#tahfidz-btn').click(function() {
-            filterTable('tahfizd');
-            setActiveButton('tahfizd');
+            filterTable('tahfidz');
+            setActiveButton('tahfidz');
         });
 
         // Default aktif KIP-K saat load
-        filterTable('kip-k');
+        filterTable('kip-k');  //klo mau dicampur antara kipk dan tahfiz kosongin aja kipknya filterTable('');
         setActiveButton('kip-k');
     });
 </script>
