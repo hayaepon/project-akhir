@@ -6,7 +6,7 @@
 
     <div class="container mx-auto px-4 py-6 min-h-screen">
         <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-2xl font-semibold mb-4">Perhitungan SMART</h3>
+            <h3 class="text-2xl font-semibold mb-4">Pertanyaan Wawancara</h3>
 
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
