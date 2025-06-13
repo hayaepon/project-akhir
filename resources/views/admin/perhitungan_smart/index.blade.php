@@ -4,213 +4,279 @@
 
 @section('content')
 
-    <div class="container mx-auto px-4 py-6 min-h-screen">
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-2xl font-semibold mb-4">Pertanyaan Wawancara</h3>
+<div class="container mx-auto px-4 py-6 min-h-screen">
+    <div class="bg-white p-6 rounded shadow">
+        <h3 class="text-2xl font-semibold mb-2">Pertanyaan Wawancara</h3>
+        <hr class="border-t-2 border-gray-300 mb-4 w-full">
+        @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+        @endif
 
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    {{ session('success') }}
-                </div>
-            @endif
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+        @endif
 
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <!-- Form Perhitungan SMART -->
-            <form action="{{ route('admin.perhitungan_smart.store') }}" method="POST" class="space-y-6">
-                @csrf
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <!-- Nama Calon Penerima -->
-                    <div class="flex flex-col">
-                        <label for="calon_penerima" class="mb-2 font-medium">Nama Calon Penerima</label>
-                        <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
-                            <option value="">Pilih Calon Penerima</option>
-                            @foreach ($calonPenerimas as $calon)
-                                <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }}>
-                                    {{ $calon->nama_calon_penerima }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('calon_penerima_id')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Pilih Jenis Beasiswa -->
-                    <div class="flex flex-col">
-                        <label for="jenis_beasiswa_id" class="mb-2 font-medium">Beasiswa</label>
-                        <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
-                            <option value="">Pilih Beasiswa</option>
-                            @foreach ($jenisBeasiswas as $beasiswa)
-                                <option value="{{ $beasiswa->id }}" {{ old('jenis_beasiswa_id') == $beasiswa->id ? 'selected' : '' }}>
-                                    {{ $beasiswa->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('jenis_beasiswa_id')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
+        <!-- Form Perhitungan SMART -->
+        <form action="{{ route('admin.perhitungan_smart.store') }}" method="POST" class="space-y-6">
+            @csrf
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Nama Calon Penerima -->
+                <div class="flex flex-col">
+                    <label for="calon_penerima" class="mb-2 font-medium">Nama Calon Penerima</label>
+                    <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
+                        <option value="">Pilih Calon Penerima</option>
+                        @foreach ($calonPenerimas as $calon)
+                        <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }}>
+                            {{ $calon->nama_calon_penerima }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('calon_penerima_id')
+                    <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
-                <!-- Kriteria Dinamis -->
-                <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {{-- Diisi oleh JavaScript --}}
+                <!-- Pilih Jenis Beasiswa -->
+                <div class="flex flex-col">
+                    <label for="jenis_beasiswa_id" class="mb-2 font-medium">Beasiswa</label>
+                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
+                        <option value="">Pilih Beasiswa</option>
+                        @foreach ($jenisBeasiswas as $beasiswa)
+                        <option value="{{ $beasiswa->id }}" {{ old('jenis_beasiswa_id') == $beasiswa->id ? 'selected' : '' }}>
+                            {{ $beasiswa->nama }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('jenis_beasiswa_id')
+                    <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
+            </div>
 
-                <div class="flex space-x-4 justify-start mt-4">
-                    <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
-                    <a href="{{ route('admin.perhitungan_smart.index') }}"
-                        class="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md">Batal</a>
-                    </div>
-                    </form>
-                    </div>
+            <!-- Kriteria Dinamis -->
+            <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {{-- Diisi oleh JavaScript --}}
+            </div>
 
-                    <!-- Tabel Hasil Perhitungan -->
-                    <div class="bg-white p-6 rounded shadow">
-                        <h3 class="text-2xl font-semibold mb-4">Tabel Perhitungan SMART</h3>
+            <div class="flex space-x-4 justify-start mt-4">
+                <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
+                <a href="{{ route('admin.perhitungan_smart.index') }}"
+                    class="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md">Batal</a>
+            </div>
+        </form>
+    </div>
 
-                        <div class="overflow-x-auto h-96">
-                            <table id="smartTable" class="min-w-full table-auto border-collapse border border-gray-300">
-                                <thead class="bg-blue-800 text-white">
-                                    <tr>
-                                        <th class="border px-4 py-2 text-left font-normal">No</th>
-                                        <th class="border px-4 py-2 text-left font-normal">Nama Calon</th>
-                                        <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
-                                        @foreach ($headerKriteria as $namaKriteria)
-                                            <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
-                                        @endforeach
-                                        <th class="border px-4 py-2 text-left font-normalp">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($hitunganSmarts as $i => $item)
-                                        <tr data-beasiswa="{{ $item->jenisBeasiswa->nama }}" class="even:bg-gray-50 hover:bg-gray-100">
-                                            <td class="border px-4 py-2 text-left">{{ $i + 1 }}</td>
-                                            <td class="border px-4 py-2 text-left">
-                                                {{ $item->calonPenerima->nama_calon_penerima }}</td>
-                                            <td class="border px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
-                                            @foreach (array_keys($headerKriteria) as $idKriteria)
-                                                <td class="border px-4 py-2 text-center">
-                                                    {{ $item->nilai_kriteria[$idKriteria] ?? '-' }}
-                                                </td>
-                                            @endforeach
-                                            <td class="border px-4 py-2 text-center">
-                                                <div class="flex justify-center space-x-3">
-                                                    <!-- Tombol Edit -->
-                                                    <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}"
-                                                        class="text-yellow-500 hover:text-yellow-700">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <span class="text-gray-400">|</span>
-                                                    <!-- Tombol Hapus -->
-                                                    <form action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST"
-                                                        style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')"
-                                                            class="text-red-600 hover:text-red-800">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                </table>
-                                </div>
-                                </div>
-                                </div>
+    <!-- Tabel Hasil Perhitungan -->
+    <div class="bg-white p-6 mb-2">
+        <div class="flex items-center justify-between mb-2">
+        <h3 class="text-xl font-medium text-[22px]">Tabel Perhitungan SMART</h3>
 
-                                {{-- Script: Load Kriteria --}}
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', () => {
-                                        const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
-                                        const kriteriaContainer = document.getElementById('kriteria-container');
+        <!-- Tombol Filter KIP-K dan Tahfidz -->
+        <div class="flex space-x-4">
+            <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
+            <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
+        </div>
+        </div>
+ <hr class="border-t-2 border-gray-300 mb-4 w-full">
+        <div class="overflow-x-auto h-96">
+            <table id="smartTable" class="min-w-full table-auto border-collapse border border-gray-300">
+                <thead class="bg-blue-800 text-white">
+                    <tr>
+                        <th class="border px-4 py-2 text-left font-normal">No</th>
+                        <th class="border px-4 py-2 text-left font-normal">Nama Calon</th>
+                        <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
+                        @foreach ($headerKriteria as $namaKriteria)
+                        <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
+                        @endforeach
+                        <th class="border px-4 py-2 text-left font-normalp">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($hitunganSmarts as $i => $item)
+                    <tr data-beasiswa="{{ $item->jenisBeasiswa->nama }}" class="even:bg-gray-50 hover:bg-gray-100">
+                        <td class="border px-4 py-2 text-left">{{ $i + 1 }}</td>
+                        <td class="border px-4 py-2 text-left">
+                            {{ $item->calonPenerima->nama_calon_penerima }}
+                        </td>
+                        <td class="border px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
+                        @foreach (array_keys($headerKriteria) as $idKriteria)
+                        <td class="border px-4 py-2 text-center">
+                            {{ $item->nilai_kriteria[$idKriteria] ?? '-' }}
+                        </td>
+                        @endforeach
+                        <td class="border px-4 py-2 text-center">
+                            <div class="flex justify-center space-x-3">
+                                <!-- Tombol Edit -->
+                                <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}"
+                                    class="text-yellow-500 hover:text-yellow-700">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <span class="text-gray-400">|</span>
+                                <!-- Tombol Hapus -->
+                                <form action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')"
+                                        class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-                                        function clearKriteria() {
-                                            kriteriaContainer.innerHTML = '';
-                                        }
+{{-- Script: Load Kriteria --}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
+    const kriteriaContainer = document.getElementById('kriteria-container');
+    const kipkBtn = document.getElementById('kipk-btn');
+    const tahfidzBtn = document.getElementById('tahfidz-btn');
+    const allBtn = document.getElementById('all-btn');
 
-                                        function createKriteriaInput(kriteria) {
-                                            const wrapper = document.createElement('div');
-                                            wrapper.classList.add('flex', 'flex-col');
+    // Fungsi untuk menghapus semua kriteria yang sudah dimuat sebelumnya
+    function clearKriteria() {
+        kriteriaContainer.innerHTML = '';
+    }
 
-                                            const label = document.createElement('label');
-                                            label.classList.add('mb-2', 'font-medium');
-                                            label.textContent = kriteria.kriteria;
-                                            label.setAttribute('for', `kriteria_${kriteria.id}`);
-                                            wrapper.appendChild(label);
+    // Fungsi untuk membuat input kriteria (dropdown)
+    function createKriteriaInput(kriteria) {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('flex', 'flex-col');
 
-                                            const select = document.createElement('select');
-                                            select.name = `nilai_kriteria[${kriteria.id}]`;
-                                            select.id = `kriteria_${kriteria.id}`;
-                                            select.classList.add('border', 'p-3', 'rounded', 'shadow');
-                                            select.required = true;
+        const label = document.createElement('label');
+        label.classList.add('mb-2', 'font-medium');
+        label.textContent = kriteria.kriteria;
+        label.setAttribute('for', `kriteria_${kriteria.id}`);
+        wrapper.appendChild(label);
 
-                                            const defaultOption = document.createElement('option');
-                                            defaultOption.value = '';
-                                            defaultOption.textContent = 'Pilih Nilai';
-                                            select.appendChild(defaultOption);
+        const select = document.createElement('select');
+        select.name = `nilai_kriteria[${kriteria.id}]`;
+        select.id = `kriteria_${kriteria.id}`;
+        select.classList.add('border', 'p-3', 'rounded', 'shadow');
+        select.required = true;
 
-                                            kriteria.subkriterias.forEach(sub => {
-                                                const option = document.createElement('option');
-                                                option.value = sub.sub_kriteria;
-                                                option.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
-                                                select.appendChild(option);
-                                            });
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Pilih Nilai';
+        select.appendChild(defaultOption);
 
-                                            wrapper.appendChild(select);
-                                            return wrapper;
-                                        }
+        kriteria.subkriterias.forEach(sub => {
+            const option = document.createElement('option');
+            option.value = sub.sub_kriteria;
+            option.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
+            select.appendChild(option);
+        });
 
-                                        function loadKriteria(jenis_beasiswa_id) {
-                                            fetch(`/admin/perhitungan-smart/kriteria/${jenis_beasiswa_id}`)
-                                                .then(response => response.json())
-                                                .then(data => {
-                                                    clearKriteria();
-                                                    if (data.length === 0) {
-                                                        kriteriaContainer.innerHTML = '<p class="text-gray-500">Tidak ada kriteria untuk beasiswa ini.</p>';
-                                                    } else {
-                                                        data.forEach(kriteria => {
-                                                            const input = createKriteriaInput(kriteria);
-                                                            kriteriaContainer.appendChild(input);
-                                                        });
-                                                    }
-                                                })
-                                                .catch(() => {
-                                                    kriteriaContainer.innerHTML = '<p class="text-red-600">Gagal memuat kriteria.</p>';
-                                                });
-                                        }
+        wrapper.appendChild(select);
+        return wrapper;
+    }
 
-                                        beasiswaSelect.addEventListener('change', () => {
-                                            const id = beasiswaSelect.value;
-                                            if (id) loadKriteria(id);
-                                            else clearKriteria();
-                                        });
+    // Fungsi untuk memuat kriteria berdasarkan jenis beasiswa yang dipilih
+    function loadKriteria(jenis_beasiswa_id) {
+        fetch(`/admin/perhitungan-smart/kriteria/${jenis_beasiswa_id}`)
+            .then(response => response.json())
+            .then(data => {
+                clearKriteria();
+                if (data.length === 0) {
+                    kriteriaContainer.innerHTML = '<p class="text-gray-500">Tidak ada kriteria untuk beasiswa ini.</p>';
+                } else {
+                    data.forEach(kriteria => {
+                        const input = createKriteriaInput(kriteria);
+                        kriteriaContainer.appendChild(input);
+                    });
+                }
+            })
+            .catch(() => {
+                kriteriaContainer.innerHTML = '<p class="text-red-600">Gagal memuat kriteria.</p>';
+            });
+    }
 
-                                        @if(old('jenis_beasiswa_id'))
-                                            loadKriteria({{ old('jenis_beasiswa_id') }});
-                                        @endif
-                                        });
+    // Menambahkan event listener untuk memilih jenis beasiswa
+    beasiswaSelect.addEventListener('change', () => {
+        const id = beasiswaSelect.value;
+        if (id) {
+            loadKriteria(id);  // Memuat kriteria berdasarkan jenis beasiswa
+        } else {
+            clearKriteria();  // Hapus kriteria jika tidak ada jenis beasiswa yang dipilih
+        }
+    });
 
-                                    // Script Filter Tabel Berdasarkan Beasiswa
-                                    function filterTable(beasiswa) {
-                                        const rows = document.querySelectorAll('#smartTable tbody tr');
-                                        rows.forEach(row => {
-                                            const jenis = row.getAttribute('data-beasiswa') || '';
-                                            if (beasiswa === 'all') {
-                                                row.style.display = '';
-                                            } else {
-                                                row.style.display = (jenis.toLowerCase().includes(beasiswa.toLowerCase())) ? '' : 'none';
-                                            }
-                                        });
-                                    }
-                                </script>
-                                
+    // Jika ada input sebelumnya, muat kriteria berdasarkan jenis beasiswa yang dipilih
+    @if(old('jenis_beasiswa_id'))
+    loadKriteria({{ old('jenis_beasiswa_id') }});
+    @endif
+
+    // Fungsi untuk memfilter tabel berdasarkan jenis beasiswa
+    function filterTable(beasiswa) {
+        const rows = document.querySelectorAll('#smartTable tbody tr');
+        rows.forEach(row => {
+            const jenis = row.getAttribute('data-beasiswa') || '';
+            if (beasiswa === 'all') {
+                row.style.display = ''; // Tampilkan semua data jika 'all'
+            } else {
+                row.style.display = (jenis.toLowerCase().includes(beasiswa.toLowerCase())) ? '' : 'none';
+            }
+        });
+    }
+
+    // Fungsi untuk menandai tombol yang aktif
+    function setActiveButton(beasiswa) {
+        // Reset semua tombol menjadi tidak aktif
+        kipkBtn.classList.remove('bg-blue-800');
+        kipkBtn.classList.add('bg-gray-400');
+        tahfidzBtn.classList.remove('bg-blue-800');
+        tahfidzBtn.classList.add('bg-gray-400');
+        allBtn.classList.remove('bg-blue-800');
+        allBtn.classList.add('bg-gray-400');
+
+        // Aktifkan tombol yang sesuai
+        if (beasiswa === 'kip-k') {
+            kipkBtn.classList.remove('bg-gray-400');
+            kipkBtn.classList.add('bg-blue-800');
+        } else if (beasiswa === 'tahfidz') {
+            tahfidzBtn.classList.remove('bg-gray-400');
+            tahfidzBtn.classList.add('bg-blue-800');
+        } else if (beasiswa === 'all') {
+            allBtn.classList.remove('bg-gray-400');
+            allBtn.classList.add('bg-blue-800');
+        }
+    }
+
+    // Event klik tombol KIP-K
+    kipkBtn.addEventListener('click', () => {
+        filterTable('kip-k'); // Filter tabel untuk KIP-K
+        setActiveButton('kip-k'); // Set tombol KIP-K sebagai aktif
+    });
+
+    // Event klik tombol Tahfidz
+    tahfidzBtn.addEventListener('click', () => {
+        filterTable('tahfidz'); // Filter tabel untuk Tahfidz
+        setActiveButton('tahfidz'); // Set tombol Tahfidz sebagai aktif
+    });
+
+    // // Event klik tombol Semua
+    // allBtn.addEventListener('click', () => {
+    //     filterTable('all'); // Tampilkan semua data
+    //     setActiveButton('all'); // Set tombol Semua sebagai aktif
+    // });
+
+    // Default tampilkan semua data (KIPK dan Tahfidz)
+    filterTable('all');
+    setActiveButton('all');
+});
+
+</script>
+
 @endsection

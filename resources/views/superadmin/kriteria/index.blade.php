@@ -7,7 +7,7 @@
 
         <!-- Tambah Kriteria -->
         <div class="bg-white p-6 mb-6">
-            <h2 class="text-2xl font-medium mb-4 text-[22px]">Tambah Kriteria & Bobot</h2>
+            <h2 class="text-2xl font-medium mb-2 text-[22px]">Tambah Kriteria & Bobot</h2>
             <hr class="border-t-2 border-gray-300 mb-4 w-full">
             <form action="{{ route('kriteria.store') }}" method="POST" class="space-y-4">
                 @csrf
@@ -48,18 +48,19 @@
         </div>
 
         <!-- Data Kriteria & Bobot -->
-        <div class="bg-white p-6 mb-2">
+        <div class="bg-white p-6 mb-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-medium text-[22px]">Data Kriteria & Bobot</h3>
 
                 <!-- Tombol Switch KIP-K & Tahfidz di kanan -->
                 <div class="flex space-x-4">
-                    <button id="kipk-btn" class="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900">KIP-K</button>
+                    <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
                     <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
                 </div>
             </div>
 
             <hr class="border-t-2 border-gray-300 mb-4 w-full">
+        
 
             <table class="min-w-full mt-6 table-auto">
                 <thead>
