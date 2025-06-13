@@ -92,7 +92,7 @@
                         @foreach ($headerKriteria as $namaKriteria)
                         <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
                         @endforeach
-                        <th class="border px-4 py-2 text-left font-normalp">Aksi</th>
+                        <th class="border px-4 py-2 text-left font-normal">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
