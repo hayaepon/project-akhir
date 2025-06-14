@@ -50,7 +50,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($hasilSeleksi as $index => $data)
+            @foreach ($hasilSeleksi as $index => $data)
                 @php
                     $nilaiKriteria = json_decode($data->nilai_kriteria, true);
                 @endphp
