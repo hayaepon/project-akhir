@@ -5,8 +5,8 @@
 @section('content')
 <div class="container mx-auto px-4 py-6 h-screen">
     <!-- Form untuk menambah Sub Kriteria -->
-    <div class="bg-white p-6 mb-6">
-        <h2 class="font-medium text-2xl mb-4 text-[22px]">Tambah Sub Kriteria</h2>
+    <div class="bg-white p-6 mb-4">
+        <h2 class="font-medium text-2xl mb-2 text-[22px]">Tambah Sub Kriteria</h2>
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
         <form action="{{ route('subkriteria.store') }}" method="POST" class="space-y-4">
             @csrf
@@ -55,8 +55,8 @@
     </div>
 
     <!-- Tabel Sub Kriteria -->
-    <div class="bg-white p-6 mb-2">
-        <div class="flex justify-between items-center mb-4">
+    <div class="bg-white p-6 mb-4">
+        <div class="flex justify-between items-center mb-2">
             <h3 class="font-medium text-2xl text-[22px]">Data Sub Kriteria</h3>
 
             <!-- Tombol Switch KIP-K & Tahfiz di kanan -->
