@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\HasilSeleksi;
+use App\Models\JenisBeasiswa;
+use App\Models\Kriteria;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -11,95 +13,91 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class HasilSeleksiAdminController extends Controller
 {
-    public function index(Request $request)
-    {
-        // Filter berdasarkan jenis beasiswa jika ada
-        $beasiswa = $request->get('beasiswa');
-        $query = HasilSeleksi::query();
-
-        if ($beasiswa) {
-            $query->where('beasiswa', $beasiswa);
-        }
-
-        $hasilSeleksi = $query->get();
-
-        return view('admin.Hasil_Seleksi.index', compact('hasilSeleksi'));
-    }
-
-   public function export(Request $request)
+     public function index(Request $request)
 {
-    $format = $request->input('format');
-    $hasilSeleksi = HasilSeleksi::all(); // Atau query sesuai kebutuhan/filter
 
-    if ($format == 'pdf') {
-        $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi'));
-        return $pdf->download('hasil-seleksi.pdf');
-    } elseif ($format == 'excel') {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+    $beasiswaFilter = $request->get('beasiswa');
 
-        // Header kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Calon Penerima');
-        $sheet->setCellValue('C1', 'Kriteria 1');
-        $sheet->setCellValue('D1', 'Kriteria 2');
-        $sheet->setCellValue('E1', 'Kriteria 3');
-        $sheet->setCellValue('F1', 'Kriteria 4');
-        $sheet->setCellValue('G1', 'Hasil');
-        $sheet->setCellValue('H1', 'Keterangan');
+    $query = HasilSeleksi::with('calonPenerima');
 
-        
-        // Data
-        $row = 2;
-        foreach ($hasilSeleksi as $index => $item) {
-            $sheet->setCellValue('A' . $row, $index + 1);
-            $sheet->setCellValue('B' . $row, $item->nama_calon_penerima);
-            $sheet->setCellValue('C' . $row, $item->nilai_kriteria1);
-            $sheet->setCellValue('D' . $row, $item->nilai_kriteria2);
-            $sheet->setCellValue('E' . $row, $item->nilai_kriteria3);
-            $sheet->setCellValue('F' . $row, $item->nilai_kriteria4);
-            $sheet->setCellValue('G' . $row, $item->hasil);
-            $sheet->setCellValue('H' . $row, $item->keterangan);
-            $row++;
-        }
-        // Styling: warna biru, teks putih, bold, rata tengah
-$headerStyle = [
-    'font' => [
-        'bold' => true,
-        'color' => ['argb' => 'FFFFFFFF'], // Putih
-    ],
-    'alignment' => [
-        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-    ],
-    'fill' => [
-        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-        'startColor' => [
-            'argb' => 'FF1E40AF', // Biru tua (Tailwind: bg-blue-800)
-        ],
-    ],
-];
-        // Terapkan style ke seluruh header (A1:H1)
-$sheet->getStyle('A1:H1')->applyFromArray($headerStyle);
-// Ambil kolom terakhir yang terisi
-$highestColumn = $sheet->getHighestColumn();
-
-// Loop semua kolom dari A sampai kolom terakhir
-foreach (range('A', $highestColumn) as $col) {
-    $sheet->getColumnDimension($col)->setAutoSize(true);
-}
-
-        //ini nnti output ke browser
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        $fileName = 'hasil-seleksi.xlsx';
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $fileName . '"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-        exit;
+    if ($beasiswaFilter) {
+        $query->whereHas('calonPenerima.jenisBeasiswa', function ($q) use ($beasiswaFilter) {
+            $q->where('nama', $beasiswaFilter);
+        });
     }
-    return redirect()->back();
+
+    $hasilSeleksi = $query->get();
+
+    // Ambil header kriteria berdasarkan filter
+    if ($beasiswaFilter) {
+        $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
+        $headerKriteria = $jenisBeasiswa
+            ? $jenisBeasiswa->kriterias->pluck('kriteria', 'id')
+            : collect();
+    } else {
+        $headerKriteria = Kriteria::pluck('kriteria', 'id');
+    }
+
+    return view('admin.hasil_seleksi.index', compact('hasilSeleksi', 'headerKriteria'));
 }
 
+  public function export(Request $request)
+    {
+        $format = $request->input('format');
+        $beasiswaFilter = $request->get('beasiswa');
+
+        $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
+        $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
+
+        $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
+        if ($jenisBeasiswa) {
+            $hasilSeleksiQuery->where('jenis_beasiswa_id', $jenisBeasiswa->id);
+        }
+        $hasilSeleksi = $hasilSeleksiQuery->get();
+
+        if ($format == 'pdf') {
+            $pdf = Pdf::loadView('admin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
+            return $pdf->download('hasil-seleksi.pdf');
+        }
+
+        if ($format == 'excel') {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $header = ['No', 'Nama Calon Penerima'];
+            foreach ($kriterias as $kriteria) {
+                $header[] = $kriteria->kriteria;
+            }
+            $header[] = 'Hasil';
+            $header[] = 'Keterangan';
+
+            $sheet->fromArray([$header], null, 'A1');
+
+            $row = 2;
+            foreach ($hasilSeleksi as $index => $item) {
+                $nilaiKriteria = json_decode($item->nilai_kriteria, true);
+                $rowData = [
+                    $index + 1,
+                    $item->calonPenerima->nama_calon_penerima ?? '-',
+                ];
+                foreach ($kriterias as $kriteria) {
+                    $rowData[] = $nilaiKriteria[$kriteria->id] ?? 0;
+                }
+                $rowData[] = $item->hasil;
+                $rowData[] = $item->keterangan ?? '-';
+
+                $sheet->fromArray([$rowData], null, 'A' . $row++);
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $filename = 'hasil-seleksi.xlsx';
+            $tempFile = tempnam(sys_get_temp_dir(), $filename);
+            $writer->save($tempFile);
+
+            return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+        }
+
+        return redirect()->back()->with('error', 'Format export tidak valid.');
+    }
 }
 
