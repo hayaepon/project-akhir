@@ -14,34 +14,40 @@ use App\Models\HitunganSmart;
 use App\Models\CalonPenerimaSubkriteria;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-
 class HasilSeleksiController extends Controller
 {
     public function index(Request $request)
-    {
-        $this->hitung();
+{
+    // Jalankan perhitungan SMART sebelum menampilkan data
+    $this->hitung();
 
-        $beasiswaFilter = $request->get('beasiswa');
+    $beasiswaFilter = $request->get('beasiswa');
 
-        $query = HasilSeleksi::with('calonPenerima');
+    $query = HasilSeleksi::with('calonPenerima');
 
-        if ($beasiswaFilter) {
-            $query->whereHas('calonPenerima', function ($q) use ($beasiswaFilter) {
-                $q->where('jenis_beasiswa', $beasiswaFilter);
-            });
-        }
-
-        $hasilSeleksi = $query->get();
-
-        // Ambil nama kriteria sebagai header
-        $headerKriteria = Kriteria::pluck('kriteria', 'id');
-
-        return view('superadmin.hasil_seleksi.index', compact('hasilSeleksi', 'headerKriteria'));
+    if ($beasiswaFilter) {
+        $query->whereHas('calonPenerima.jenisBeasiswa', function ($q) use ($beasiswaFilter) {
+            $q->where('nama', $beasiswaFilter);
+        });
     }
 
+    $hasilSeleksi = $query->get();
+
+    // Ambil header kriteria berdasarkan filter
+    if ($beasiswaFilter) {
+        $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
+        $headerKriteria = $jenisBeasiswa
+            ? $jenisBeasiswa->kriterias->pluck('kriteria', 'id')
+            : collect();
+    } else {
+        $headerKriteria = Kriteria::pluck('kriteria', 'id');
+    }
+
+    return view('superadmin.hasil_seleksi.index', compact('hasilSeleksi', 'headerKriteria'));
+}
 
 
-    public function hitung()
+    private function hitung()
     {
         $kriterias = Kriteria::with('subkriterias')->get();
         $calonPenerimas = CalonPenerima::with('subkriteriasTerpilih.subkriteria')->get();
@@ -53,11 +59,13 @@ class HasilSeleksiController extends Controller
             $nilaiKriteria = [];
 
             foreach ($kriterias as $kriteria) {
-                $terpilih = $calon->subkriteriasTerpilih->firstWhere('kriteria_id', $kriteria->id);
+                $terpilih = $calon->subkriteriasTerpilih
+                    ->firstWhere('kriteria_id', $kriteria->id);
 
                 if ($terpilih) {
                     $nilai = $terpilih->nilai;
-                    $max = CalonPenerimaSubkriteria::where('kriteria_id', $kriteria->id)->max('nilai') ?: 1;
+                    $max = CalonPenerimaSubkriteria::where('kriteria_id', $kriteria->id)
+                        ->max('nilai') ?: 1;
                     $normalisasi = $nilai / $max;
                     $skor = $normalisasi * $kriteria->bobot;
 
@@ -70,40 +78,33 @@ class HasilSeleksiController extends Controller
 
             $dataHasil[] = [
                 'calon_penerima_id' => $calon->id,
-                'jenis_beasiswa_id' => $calon->jenis_beasiswa_id,  // pastikan ini ada di model CalonPenerima
-                'hasil' => round($totalSkor, 4),                 // ini untuk kolom hasil
+                'jenis_beasiswa_id' => $calon->jenis_beasiswa_id,
+                'hasil' => round($totalSkor, 4),
                 'nilai_kriteria' => json_encode($nilaiKriteria),
-                'keterangan' => null,                             // bisa isi null dulu
+                'keterangan' => null,
             ];
         }
 
-        // Hapus data hasil seleksi lama
+        // Hapus data lama dan simpan hasil baru
         HasilSeleksi::query()->delete();
-
-        // Insert hasil baru
         foreach ($dataHasil as $hasil) {
             HasilSeleksi::create($hasil);
         }
-
-        return redirect()->route('hasil-seleksi.index')->with('success', 'Perhitungan selesai.');
     }
-
-
-
 
     public function export(Request $request)
     {
         $format = $request->input('format');
         $beasiswaFilter = $request->get('beasiswa');
 
-        // Ambil jenis beasiswa
         $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
         $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
 
-        // Ambil hasil seleksi berdasarkan jenis beasiswa
-        $hasilSeleksi = HasilSeleksi::with('calonPenerima')
-            ->where('jenis_beasiswa_id', $jenisBeasiswa->id ?? null)
-            ->get();
+        $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
+        if ($jenisBeasiswa) {
+            $hasilSeleksiQuery->where('jenis_beasiswa_id', $jenisBeasiswa->id);
+        }
+        $hasilSeleksi = $hasilSeleksiQuery->get();
 
         if ($format == 'pdf') {
             $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
@@ -114,18 +115,15 @@ class HasilSeleksiController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            // Buat header dinamis
             $header = ['No', 'Nama Calon Penerima'];
             foreach ($kriterias as $kriteria) {
-                $header[] = $kriteria->nama_kriteria;
+                $header[] = $kriteria->kriteria;
             }
             $header[] = 'Hasil';
             $header[] = 'Keterangan';
 
-            // Tulis header
             $sheet->fromArray([$header], null, 'A1');
 
-            // Isi data
             $row = 2;
             foreach ($hasilSeleksi as $index => $item) {
                 $nilaiKriteria = json_decode($item->nilai_kriteria, true);
@@ -133,26 +131,21 @@ class HasilSeleksiController extends Controller
                     $index + 1,
                     $item->calonPenerima->nama_calon_penerima ?? '-',
                 ];
-
                 foreach ($kriterias as $kriteria) {
                     $rowData[] = $nilaiKriteria[$kriteria->id] ?? 0;
                 }
-
                 $rowData[] = $item->hasil;
                 $rowData[] = $item->keterangan ?? '-';
 
                 $sheet->fromArray([$rowData], null, 'A' . $row++);
             }
 
-            // Simpan file
             $writer = new Xlsx($spreadsheet);
             $filename = 'hasil-seleksi.xlsx';
+            $tempFile = tempnam(sys_get_temp_dir(), $filename);
+            $writer->save($tempFile);
 
-            // Download response
-            $temp_file = tempnam(sys_get_temp_dir(), $filename);
-            $writer->save($temp_file);
-
-            return response()->download($temp_file, $filename)->deleteFileAfterSend(true);
+            return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
         }
 
         return redirect()->back()->with('error', 'Format export tidak valid.');

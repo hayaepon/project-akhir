@@ -35,7 +35,7 @@ class AdminController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => \Hash::make($request->password),
+            'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
@@ -43,30 +43,44 @@ class AdminController extends Controller
     }
 
     // Menampilkan form edit admin
-public function edit($id)
-{
-    $admin = User::findOrFail($id);
-    return view('superadmin.manajemen_admin.edit', compact('admin'));
-}
+    public function edit($id)
+    {
+        $admin = User::findOrFail($id);
+        return view('superadmin.manajemen_admin.edit', compact('admin'));
+    }
 
-// Menyimpan perubahan admin
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $id,
-        'role' => 'required|in:Admin,Super_Admin',
-    ]);
+    // Menyimpan perubahan admin (termasuk ganti password jika diisi)
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required|in:Admin,Super_Admin',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
 
-    $admin = User::findOrFail($id);
-    $admin->update([
-        'name' => $request->name,
-        'email' => $request->email,
-        'role' => $request->role,
-    ]);
+        $admin = User::findOrFail($id);
 
-    return redirect()->route('manajemen_admin.index')->with('success', 'Data admin berhasil diperbarui.');
-}
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+        ];
+
+        // Cek jika password diisi, maka update password juga
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $admin->update($data);
+
+        $message = 'Data admin berhasil diperbarui.';
+        if ($request->filled('password')) {
+            $message .= ' Password berhasil diganti.';
+        }
+
+        return redirect()->route('manajemen_admin.index')->with('success', $message);
+    }
 
     // Menghapus data admin
     public function destroy($id)

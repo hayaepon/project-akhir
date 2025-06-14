@@ -12,29 +12,45 @@ use App\Models\Subkriteria;
 
 class PerhitunganSmartController extends Controller
 {
-    public function index()
-    {
-        $hasilPerhitungan = HitunganSmart::with(['calonPenerima', 'jenisBeasiswa'])->get();
+    public function index(Request $request)
+{
+    $jenisBeasiswaId = $request->query('jenis_beasiswa');
 
-        // Pastikan nilai_kriteria ter-decode menjadi array
-        foreach ($hasilPerhitungan as $item) {
-            $item->nilai_kriteria = is_string($item->nilai_kriteria)
-                ? json_decode($item->nilai_kriteria, true)
-                : $item->nilai_kriteria;
+    $hasilPerhitungan = HitunganSmart::with(['calonPenerima', 'jenisBeasiswa'])
+        ->when($jenisBeasiswaId, function ($query) use ($jenisBeasiswaId) {
+            $query->where('jenis_beasiswa_id', $jenisBeasiswaId);
+        })
+        ->get();
+
+    foreach ($hasilPerhitungan as $item) {
+        $item->nilai_kriteria = is_string($item->nilai_kriteria)
+            ? json_decode($item->nilai_kriteria, true)
+            : $item->nilai_kriteria;
+    }
+
+    // Ambil jenis beasiswa untuk tombol filter
+    $jenisBeasiswas = JenisBeasiswa::with('kriterias')->get();
+
+    // Ambil header kriteria berdasarkan beasiswa yang difilter
+    $headerKriteria = [];
+    if ($jenisBeasiswaId) {
+        $jenisDipilih = $jenisBeasiswas->firstWhere('id', $jenisBeasiswaId);
+        if ($jenisDipilih) {
+            foreach ($jenisDipilih->kriterias as $kriteria) {
+                $headerKriteria[$kriteria->id] = $kriteria->kriteria;
+            }
         }
-
-        // Ambil semua kriteria unik dari jenis beasiswa yang berelasi
-        $jenisBeasiswas = JenisBeasiswa::with('kriterias')->get();
-        $headerKriteria = [];
-
+    } else {
         foreach ($jenisBeasiswas as $jenis) {
             foreach ($jenis->kriterias as $kriteria) {
                 $headerKriteria[$kriteria->id] = $kriteria->kriteria;
             }
         }
-
-        return view('superadmin.perhitungan-smart.index', compact('hasilPerhitungan', 'headerKriteria'));
     }
+
+    return view('superadmin.perhitungan-smart.index', compact('hasilPerhitungan', 'headerKriteria', 'jenisBeasiswas', 'jenisBeasiswaId'));
+}
+
 
     public function getKriteriaByBeasiswa($jenisBeasiswaId)
     {

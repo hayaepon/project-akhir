@@ -21,16 +21,17 @@ class AdminDashboardController extends Controller
         $jumlahTahfidz = CalonPenerima::where('jenis_beasiswa_id', $tahfidzId)->count();
         $jumlahLolos = HasilSeleksi::where('keterangan', 'lolos')->count();
 
-        // Data grafik pendaftaran per tahun
+        // Grafik pendaftaran
         $grafikPendaftaran = CalonPenerima::selectRaw('YEAR(created_at) as tahun, COUNT(*) as total')
+            ->whereNotNull('created_at')
             ->groupBy('tahun')
             ->orderBy('tahun')
             ->get();
 
-
-        // Data grafik lolos seleksi per tahun
+        // Grafik lolos
         $grafikLolos = HasilSeleksi::selectRaw('YEAR(created_at) as tahun, COUNT(*) as total')
             ->where('keterangan', 'lolos')
+            ->whereNotNull('created_at')
             ->groupBy('tahun')
             ->orderBy('tahun')
             ->get();
@@ -46,4 +47,3 @@ class AdminDashboardController extends Controller
         ]);
     }
 }
-
