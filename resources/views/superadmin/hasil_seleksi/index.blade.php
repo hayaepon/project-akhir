@@ -22,14 +22,14 @@
 
                 <!-- Tombol Filter -->
                 <div class="relative">
-                    <button id="filterButton" class="flex items-center bg-blue-800 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                    <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition duration-300">
                         <i class="fas fa-filter mr-2"></i> Filters
                     </button>
                     <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
                         <form action="{{ route('hasil-seleksi.index') }}" method="GET" id="filterForm">
                             @csrf
                             <select name="beasiswa" class="w-full p-2 border border-gray-300 rounded-lg" onchange="document.getElementById('filterForm').submit()">
-                                <option value="">Filter Beasiswa</option>
+                                <option value="">Semua Beasiswa</option>
                                 <option value="KIP-K" @if(request()->get('beasiswa') == 'KIP-K') selected @endif>KIP-K</option>
                                 <option value="Tahfidz" @if(request()->get('beasiswa') == 'Tahfidz') selected @endif>Tahfidz</option>
                             </select>
