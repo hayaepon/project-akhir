@@ -93,61 +93,108 @@ class HasilSeleksiController extends Controller
     }
 
     public function export(Request $request)
-    {
-        $format = $request->input('format');
-        $beasiswaFilter = $request->get('beasiswa');
+{
+    $format = $request->input('format');
+    $beasiswaFilter = $request->get('beasiswa');
 
-        $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
-        $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
+    $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
+    $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
 
-        $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
-        if ($jenisBeasiswa) {
-            $hasilSeleksiQuery->where('jenis_beasiswa_id', $jenisBeasiswa->id);
-        }
-        $hasilSeleksi = $hasilSeleksiQuery->get();
-
-        if ($format == 'pdf') {
-            $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
-            return $pdf->download('hasil-seleksi.pdf');
-        }
-
-        if ($format == 'excel') {
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-
-            $header = ['No', 'Nama Calon Penerima'];
-            foreach ($kriterias as $kriteria) {
-                $header[] = $kriteria->kriteria;
-            }
-            $header[] = 'Hasil';
-            $header[] = 'Keterangan';
-
-            $sheet->fromArray([$header], null, 'A1');
-
-            $row = 2;
-            foreach ($hasilSeleksi as $index => $item) {
-                $nilaiKriteria = json_decode($item->nilai_kriteria, true);
-                $rowData = [
-                    $index + 1,
-                    $item->calonPenerima->nama_calon_penerima ?? '-',
-                ];
-                foreach ($kriterias as $kriteria) {
-                    $rowData[] = $nilaiKriteria[$kriteria->id] ?? 0;
-                }
-                $rowData[] = $item->hasil;
-                $rowData[] = $item->keterangan ?? '-';
-
-                $sheet->fromArray([$rowData], null, 'A' . $row++);
-            }
-
-            $writer = new Xlsx($spreadsheet);
-            $filename = 'hasil-seleksi.xlsx';
-            $tempFile = tempnam(sys_get_temp_dir(), $filename);
-            $writer->save($tempFile);
-
-            return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
-        }
-
-        return redirect()->back()->with('error', 'Format export tidak valid.');
+    $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
+    if ($jenisBeasiswa) {
+        $hasilSeleksiQuery->where('jenis_beasiswa_id', $jenisBeasiswa->id);
     }
+    $hasilSeleksi = $hasilSeleksiQuery->get();
+
+    if ($format == 'pdf') {
+        $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
+        return $pdf->download('hasil-seleksi.pdf');
+    }
+
+    if ($format == 'excel') {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $header = ['No', 'Nama Calon Penerima'];
+        foreach ($kriterias as $kriteria) {
+            $header[] = $kriteria->kriteria;
+        }
+        $header[] = 'Hasil';
+        $header[] = 'Keterangan';
+
+        // Set header values
+        $sheet->fromArray([$header], null, 'A1');
+
+        // Set Header Style (Biru) dan Border
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'], // Putih
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1E40AF'], // Biru
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'], // Hitam
+                ],
+            ],
+        ];
+
+        // Apply header style and border
+        $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
+
+        // Data rows
+        $row = 2;
+        foreach ($hasilSeleksi as $index => $item) {
+            $nilaiKriteria = json_decode($item->nilai_kriteria, true);
+            $rowData = [
+                $index + 1,
+                $item->calonPenerima->nama_calon_penerima ?? '-',
+            ];
+            foreach ($kriterias as $kriteria) {
+                $rowData[] = $nilaiKriteria[$kriteria->id] ?? 0;
+            }
+            $rowData[] = $item->hasil;
+            $rowData[] = $item->keterangan ?? '-';
+
+            // Insert data into the sheet
+            $sheet->fromArray([$rowData], null, 'A' . $row++);
+
+            // Apply border style for each row (Data)
+            $sheet->getStyle('A' . ($row - 1) . ':' . $sheet->getHighestColumn() . ($row - 1))
+                  ->applyFromArray([
+                      'borders' => [
+                          'allBorders' => [
+                              'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                              'color' => ['rgb' => '000000'], // Hitam
+                          ],
+                      ],
+                  ]);
+        }
+
+        // Auto Resize Columns
+        foreach (range('A', $sheet->getHighestColumn()) as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true); // Menyesuaikan lebar kolom otomatis
+        }
+
+        // Create Excel Writer
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'hasil-seleksi.xlsx';
+        $tempFile = tempnam(sys_get_temp_dir(), $filename);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+    }
+
+    return redirect()->back()->with('error', 'Format export tidak valid.');
+}
+
 }
