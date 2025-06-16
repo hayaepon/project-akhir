@@ -58,14 +58,11 @@
             </div>
 
             <!-- Kriteria Dinamis -->
-            <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {{-- Diisi oleh JavaScript --}}
-            </div>
+            <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
 
             <div class="flex space-x-4 justify-start mt-4">
                 <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
-                <a href="{{ route('admin.perhitungan_smart.index') }}"
-                    class="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md">Batal</a>
+                <a href="{{ route('admin.perhitungan_smart.index') }}" class="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md">Batal</a>
             </div>
         </form>
     </div>
@@ -73,15 +70,28 @@
     <!-- Tabel Hasil Perhitungan -->
     <div class="bg-white p-6 mb-2">
         <div class="flex items-center justify-between mb-2">
-        <h3 class="text-xl font-medium text-[22px]">Tabel Perhitungan SMART</h3>
+            <h3 class="text-xl font-medium text-[22px]">Tabel Perhitungan SMART</h3>
 
-        <!-- Tombol Filter KIP-K dan Tahfidz -->
-        <div class="flex space-x-4">
-            <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
-            <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
+            <!-- Tombol Filter dengan Dropdown -->
+            <div class="relative">
+                <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition duration-300 mr-2"> <!-- Menambahkan mr-2 untuk jarak -->
+                    <i class="fas fa-filter mr-2"></i> Filters
+                </button>
+                <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
+                    <form action="{{ route('admin.perhitungan_smart.index') }}" method="GET" id="filterForm">
+                        @csrf
+                        <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg"">
+                            <option value="">Semua Beasiswa</option>
+                            @foreach ($jenisBeasiswas as $jenis)
+                            <option value="{{ $jenis->id }}" @if(request()->get('jenis_beasiswa') == $jenis->id) selected @endif>{{ $jenis->nama }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            </div>
         </div>
-        </div>
- <hr class="border-t-2 border-gray-300 mb-4 w-full">
+        <hr class="border-t-2 border-gray-300 mb-4 w-full">
+
         <div class="overflow-x-auto h-96">
             <table id="smartTable" class="min-w-full table-auto border-collapse border border-gray-300">
                 <thead class="bg-blue-800 text-white">
@@ -99,30 +109,21 @@
                     @foreach ($hitunganSmarts as $i => $item)
                     <tr data-beasiswa="{{ $item->jenisBeasiswa->nama }}" class="even:bg-gray-50 hover:bg-gray-100">
                         <td class="border px-4 py-2 text-left">{{ $i + 1 }}</td>
-                        <td class="border px-4 py-2 text-left">
-                            {{ $item->calonPenerima->nama_calon_penerima }}
-                        </td>
+                        <td class="border px-4 py-2 text-left">{{ $item->calonPenerima->nama_calon_penerima }}</td>
                         <td class="border px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
                         @foreach (array_keys($headerKriteria) as $idKriteria)
-                        <td class="border px-4 py-2 text-center">
-                            {{ $item->nilai_kriteria[$idKriteria] ?? '-' }}
-                        </td>
+                        <td class="border px-4 py-2 text-center">{{ $item->nilai_kriteria[$idKriteria] ?? '-' }}</td>
                         @endforeach
                         <td class="border px-4 py-2 text-center">
                             <div class="flex justify-center space-x-3">
-                                <!-- Tombol Edit -->
-                                <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}"
-                                    class="text-yellow-500 hover:text-yellow-700">
+                                <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}" class="text-yellow-500 hover:text-yellow-700">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <span class="text-gray-400">|</span>
-                                <!-- Tombol Hapus -->
-                                <form action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST"
-                                    style="display:inline;">
+                                <form action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')"
-                                        class="text-red-600 hover:text-red-800">
+                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:text-red-800">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -136,147 +137,109 @@
     </div>
 </div>
 
-{{-- Script: Load Kriteria --}}
+{{-- Script: Load Kriteria & Filter --}}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
-    const kriteriaContainer = document.getElementById('kriteria-container');
-    const kipkBtn = document.getElementById('kipk-btn');
-    const tahfidzBtn = document.getElementById('tahfidz-btn');
-    const allBtn = document.getElementById('all-btn');
+document.addEventListener('DOMContentLoaded', () => {
+    /* === Elemen dasar === */
+    const beasiswaSelect   = document.getElementById('jenis_beasiswa_id');   // combobox pada form input
+    const kriteriaContainer = document.getElementById('kriteria-container'); // wadah input kriteria
 
-    // Fungsi untuk menghapus semua kriteria yang sudah dimuat sebelumnya
-    function clearKriteria() {
-        kriteriaContainer.innerHTML = '';
-    }
+    /* === Elemen filter baru === */
+    const filterButton   = document.getElementById('filterButton');          // tombol "Filters"
+    const filterDropdown = document.getElementById('filterDropdown');        // panel dropdown
+    const filterSelect   = filterDropdown.querySelector('select');           // <select> di dalam dropdown
 
-    // Fungsi untuk membuat input kriteria (dropdown)
-    function createKriteriaInput(kriteria) {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('flex', 'flex-col');
+    /* ---------- FUNGSI BANTUAN ---------- */
 
-        const label = document.createElement('label');
-        label.classList.add('mb-2', 'font-medium');
-        label.textContent = kriteria.kriteria;
-        label.setAttribute('for', `kriteria_${kriteria.id}`);
-        wrapper.appendChild(label);
+    // Clear kriteria
+    const clearKriteria = () => { kriteriaContainer.innerHTML = ''; };
 
-        const select = document.createElement('select');
-        select.name = `nilai_kriteria[${kriteria.id}]`;
-        select.id = `kriteria_${kriteria.id}`;
-        select.classList.add('border', 'p-3', 'rounded', 'shadow');
-        select.required = true;
+    // Generate input kriteria
+    const createKriteriaInput = (kriteria) => {
+        const wrap  = document.createElement('div');
+        wrap.className = 'flex flex-col';
 
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Pilih Nilai';
-        select.appendChild(defaultOption);
+        const lbl = document.createElement('label');
+        lbl.className = 'mb-2 font-medium';
+        lbl.textContent = kriteria.kriteria;
+        lbl.setAttribute('for', `kriteria_${kriteria.id}`);
 
+        const sel = document.createElement('select');
+        sel.name  = `nilai_kriteria[${kriteria.id}]`;
+        sel.id    = `kriteria_${kriteria.id}`;
+        sel.className = 'border p-3 rounded shadow';
+        sel.required  = true;
+
+        sel.innerHTML = '<option value="">Pilih Nilai</option>';
         kriteria.subkriterias.forEach(sub => {
-            const option = document.createElement('option');
-            option.value = sub.sub_kriteria;
-            option.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
-            select.appendChild(option);
+            const opt = document.createElement('option');
+            opt.value = sub.sub_kriteria;
+            opt.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
+            sel.appendChild(opt);
         });
 
-        wrapper.appendChild(select);
-        return wrapper;
-    }
+        wrap.append(lbl, sel);
+        return wrap;
+    };
 
-    // Fungsi untuk memuat kriteria berdasarkan jenis beasiswa yang dipilih
-    function loadKriteria(jenis_beasiswa_id) {
-        fetch(`/admin/perhitungan-smart/kriteria/${jenis_beasiswa_id}`)
-            .then(response => response.json())
+    // Load kriteria sesuai jenis beasiswa
+    const loadKriteria = (id) => {
+        fetch(`/admin/perhitungan-smart/kriteria/${id}`)
+            .then(r => r.json())
             .then(data => {
                 clearKriteria();
                 if (data.length === 0) {
                     kriteriaContainer.innerHTML = '<p class="text-gray-500">Tidak ada kriteria untuk beasiswa ini.</p>';
                 } else {
-                    data.forEach(kriteria => {
-                        const input = createKriteriaInput(kriteria);
-                        kriteriaContainer.appendChild(input);
-                    });
+                    data.forEach(k => kriteriaContainer.appendChild(createKriteriaInput(k)));
                 }
             })
             .catch(() => {
                 kriteriaContainer.innerHTML = '<p class="text-red-600">Gagal memuat kriteria.</p>';
             });
-    }
+    };
 
-    // Menambahkan event listener untuk memilih jenis beasiswa
-    beasiswaSelect.addEventListener('change', () => {
-        const id = beasiswaSelect.value;
-        if (id) {
-            loadKriteria(id);  // Memuat kriteria berdasarkan jenis beasiswa
-        } else {
-            clearKriteria();  // Hapus kriteria jika tidak ada jenis beasiswa yang dipilih
-        }
-    });
-
-    // Jika ada input sebelumnya, muat kriteria berdasarkan jenis beasiswa yang dipilih
-    @if(old('jenis_beasiswa_id'))
-    loadKriteria({{ old('jenis_beasiswa_id') }});
-    @endif
-
-    // Fungsi untuk memfilter tabel berdasarkan jenis beasiswa
-    function filterTable(beasiswa) {
+    // Filter baris tabel
+    const filterTable = (beasiswa) => {
         const rows = document.querySelectorAll('#smartTable tbody tr');
         rows.forEach(row => {
-            const jenis = row.getAttribute('data-beasiswa') || '';
-            if (beasiswa === 'all') {
-                row.style.display = ''; // Tampilkan semua data jika 'all'
-            } else {
-                row.style.display = (jenis.toLowerCase().includes(beasiswa.toLowerCase())) ? '' : 'none';
-            }
+            const jenis = (row.dataset.beasiswa || '').toLowerCase();
+            row.style.display = (beasiswa === 'all' || jenis.includes(beasiswa)) ? '' : 'none';
         });
-    }
+    };
 
-    // Fungsi untuk menandai tombol yang aktif
-    function setActiveButton(beasiswa) {
-        // Reset semua tombol menjadi tidak aktif
-        kipkBtn.classList.remove('bg-blue-800');
-        kipkBtn.classList.add('bg-gray-400');
-        tahfidzBtn.classList.remove('bg-blue-800');
-        tahfidzBtn.classList.add('bg-gray-400');
-        allBtn.classList.remove('bg-blue-800');
-        allBtn.classList.add('bg-gray-400');
+    /* ---------- EVENT HANDLERS ---------- */
 
-        // Aktifkan tombol yang sesuai
-        if (beasiswa === 'kip-k') {
-            kipkBtn.classList.remove('bg-gray-400');
-            kipkBtn.classList.add('bg-blue-800');
-        } else if (beasiswa === 'tahfidz') {
-            tahfidzBtn.classList.remove('bg-gray-400');
-            tahfidzBtn.classList.add('bg-blue-800');
-        } else if (beasiswa === 'all') {
-            allBtn.classList.remove('bg-gray-400');
-            allBtn.classList.add('bg-blue-800');
+    // Ketika select beasiswa di form input berubah
+    beasiswaSelect.addEventListener('change', () => {
+        beasiswaSelect.value ? loadKriteria(beasiswaSelect.value) : clearKriteria();
+    });
+
+    // Muat kriteria jika ada nilai lama (edit / error validation)
+    @if(old('jenis_beasiswa_id'))
+        loadKriteria({{ old('jenis_beasiswa_id') }});
+    @endif
+
+    // Toggle tampilan dropdown filter
+    filterButton.addEventListener('click', () => filterDropdown.classList.toggle('hidden'));
+
+    // Klik di luar dropdown ➜ tutup
+    document.addEventListener('click', (e) => {
+        if (!filterButton.contains(e.target) && !filterDropdown.contains(e.target)) {
+            filterDropdown.classList.add('hidden');
         }
-    }
-
-    // Event klik tombol KIP-K
-    kipkBtn.addEventListener('click', () => {
-        filterTable('kip-k'); // Filter tabel untuk KIP-K
-        setActiveButton('kip-k'); // Set tombol KIP-K sebagai aktif
     });
 
-    // Event klik tombol Tahfidz
-    tahfidzBtn.addEventListener('click', () => {
-        filterTable('tahfidz'); // Filter tabel untuk Tahfidz
-        setActiveButton('tahfidz'); // Set tombol Tahfidz sebagai aktif
+    // Saat pilihan pada <select> filter berubah
+    filterSelect.addEventListener('change', () => {
+        const valText = filterSelect.options[filterSelect.selectedIndex].textContent.trim().toLowerCase();
+        filterTable(valText === 'filter beasiswa' || filterSelect.value === '' ? 'all' : valText);
+        filterDropdown.classList.add('hidden');
     });
 
-    // // Event klik tombol Semua
-    // allBtn.addEventListener('click', () => {
-    //     filterTable('all'); // Tampilkan semua data
-    //     setActiveButton('all'); // Set tombol Semua sebagai aktif
-    // });
-
-    // Default tampilkan semua data (KIPK dan Tahfidz)
+    // Default: tampilkan semua baris
     filterTable('all');
-    setActiveButton('all');
 });
-
 </script>
 
 @endsection

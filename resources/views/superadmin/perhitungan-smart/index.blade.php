@@ -29,7 +29,7 @@
                     <form action="{{ route('perhitungan-smart.index') }}" method="GET" id="filterForm">
                         @csrf
                         <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg" onchange="document.getElementById('filterForm').submit()">
-                            <option value="">Filter Beasiswa</option>
+                            <option value="">Semua Beasiswa</option>
                             @foreach ($jenisBeasiswas as $jenis)
                             <option value="{{ $jenis->id }}" @if(request()->get('jenis_beasiswa') == $jenis->id) selected @endif>{{ $jenis->nama }}</option>
                             @endforeach
