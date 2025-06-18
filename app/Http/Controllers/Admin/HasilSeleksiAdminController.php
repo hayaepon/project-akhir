@@ -48,6 +48,12 @@ class HasilSeleksiAdminController extends Controller
 
         $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
         $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
+        if ($jenisBeasiswa) {
+        $kriterias = $jenisBeasiswa->kriterias;
+        } else {
+        $kriterias = Kriteria::all();
+        }
+
 
         $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
         if ($jenisBeasiswa) {

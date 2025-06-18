@@ -74,18 +74,18 @@
 
             <!-- Tombol Filter dengan Dropdown -->
             <div class="relative">
-                <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition duration-300 mr-2"> <!-- Menambahkan mr-2 untuk jarak -->
+                <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition duration-300 mr-2">
                     <i class="fas fa-filter mr-2"></i> Filters
                 </button>
-                <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
+                <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden z-10">
                     <form action="{{ route('admin.perhitungan_smart.index') }}" method="GET" id="filterForm">
-                        @csrf
-                        <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg"">
+                        <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg">
                             <option value="">Semua Beasiswa</option>
                             @foreach ($jenisBeasiswas as $jenis)
                             <option value="{{ $jenis->id }}" @if(request()->get('jenis_beasiswa') == $jenis->id) selected @endif>{{ $jenis->nama }}</option>
                             @endforeach
                         </select>
+                        <button type="submit" class="w-full bg-blue-500 text-white py-1 px-2 rounded-b-lg">Apply</button>
                     </form>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                         <th class="border px-4 py-2 text-left font-normal">No</th>
                         <th class="border px-4 py-2 text-left font-normal">Nama Calon</th>
                         <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
-                        @foreach ($headerKriteria as $namaKriteria)
+                        @foreach ($headerKriteria as $id => $namaKriteria)
                         <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
                         @endforeach
                         <th class="border px-4 py-2 text-left font-normal">Aksi</th>
@@ -107,11 +107,11 @@
                 </thead>
                 <tbody>
                     @foreach ($hitunganSmarts as $i => $item)
-                    <tr data-beasiswa="{{ $item->jenisBeasiswa->nama }}" class="even:bg-gray-50 hover:bg-gray-100">
+                    <tr class="even:bg-gray-50 hover:bg-gray-100">
                         <td class="border px-4 py-2 text-left">{{ $i + 1 }}</td>
                         <td class="border px-4 py-2 text-left">{{ $item->calonPenerima->nama_calon_penerima }}</td>
                         <td class="border px-4 py-2 text-left">{{ $item->jenisBeasiswa->nama }}</td>
-                        @foreach (array_keys($headerKriteria) as $idKriteria)
+                        @foreach ($headerKriteria as $idKriteria => $namaKriteria)
                         <td class="border px-4 py-2 text-center">{{ $item->nilai_kriteria[$idKriteria] ?? '-' }}</td>
                         @endforeach
                         <td class="border px-4 py-2 text-center">
@@ -137,17 +137,14 @@
     </div>
 </div>
 
-{{-- Script: Load Kriteria & Filter --}}
+{{-- Script: Load Kriteria --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     /* === Elemen dasar === */
-    const beasiswaSelect   = document.getElementById('jenis_beasiswa_id');   // combobox pada form input
-    const kriteriaContainer = document.getElementById('kriteria-container'); // wadah input kriteria
-
-    /* === Elemen filter baru === */
-    const filterButton   = document.getElementById('filterButton');          // tombol "Filters"
-    const filterDropdown = document.getElementById('filterDropdown');        // panel dropdown
-    const filterSelect   = filterDropdown.querySelector('select');           // <select> di dalam dropdown
+    const beasiswaSelect   = document.getElementById('jenis_beasiswa_id');
+    const kriteriaContainer = document.getElementById('kriteria-container');
+    const filterButton   = document.getElementById('filterButton');
+    const filterDropdown = document.getElementById('filterDropdown');
 
     /* ---------- FUNGSI BANTUAN ---------- */
 
@@ -199,15 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // Filter baris tabel
-    const filterTable = (beasiswa) => {
-        const rows = document.querySelectorAll('#smartTable tbody tr');
-        rows.forEach(row => {
-            const jenis = (row.dataset.beasiswa || '').toLowerCase();
-            row.style.display = (beasiswa === 'all' || jenis.includes(beasiswa)) ? '' : 'none';
-        });
-    };
-
     /* ---------- EVENT HANDLERS ---------- */
 
     // Ketika select beasiswa di form input berubah
@@ -229,16 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             filterDropdown.classList.add('hidden');
         }
     });
-
-    // Saat pilihan pada <select> filter berubah
-    filterSelect.addEventListener('change', () => {
-        const valText = filterSelect.options[filterSelect.selectedIndex].textContent.trim().toLowerCase();
-        filterTable(valText === 'filter beasiswa' || filterSelect.value === '' ? 'all' : valText);
-        filterDropdown.classList.add('hidden');
-    });
-
-    // Default: tampilkan semua baris
-    filterTable('all');
 });
 </script>
 

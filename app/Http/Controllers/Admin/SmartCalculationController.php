@@ -15,22 +15,43 @@ class SmartCalculationController extends Controller
     {
         $calonPenerimas = CalonPenerima::all();
         $jenisBeasiswas = JenisBeasiswa::with('kriterias.subkriterias')->get();
-        $hitunganSmarts = HitunganSmart::with('calonPenerima', 'jenisBeasiswa')->get();
+        
+        // Filter hitunganSmarts based on jenis_beasiswa if filter is applied
+        $hitunganSmartsQuery = HitunganSmart::with('calonPenerima', 'jenisBeasiswa');
+        
+        if (request()->has('jenis_beasiswa') && request()->get('jenis_beasiswa') != '') {
+            $hitunganSmartsQuery->where('jenis_beasiswa_id', request()->get('jenis_beasiswa'));
+        }
+        
+        $hitunganSmarts = $hitunganSmartsQuery->get();
 
-        // Decode nilai_kriteria untuk setiap hitungan agar bisa diakses di Blade
+        // Decode nilai_kriteria for each hitungan
         foreach ($hitunganSmarts as $item) {
             $item->nilai_kriteria = is_string($item->nilai_kriteria) ? json_decode($item->nilai_kriteria, true) : $item->nilai_kriteria;
         }
 
-        // Ambil semua nama kriteria unik dari semua jenis beasiswa
-        $kriteriaSet = [];
-        foreach ($jenisBeasiswas as $jenis) {
-            foreach ($jenis->kriterias as $kriteria) {
-                $kriteriaSet[$kriteria->id] = $kriteria->kriteria;
+        // Get criteria based on filter or all criteria if no filter
+        $selectedBeasiswaId = request()->get('jenis_beasiswa');
+        $headerKriteria = [];
+        
+        if ($selectedBeasiswaId) {
+            // Get only criteria for the selected beasiswa
+            $selectedBeasiswa = JenisBeasiswa::with('kriterias')->find($selectedBeasiswaId);
+            if ($selectedBeasiswa) {
+                foreach ($selectedBeasiswa->kriterias as $kriteria) {
+                    $headerKriteria[$kriteria->id] = $kriteria->kriteria;
+                }
+            }
+        } else {
+            // Get all unique criteria names from all beasiswa types
+            foreach ($jenisBeasiswas as $jenis) {
+                foreach ($jenis->kriterias as $kriteria) {
+                    if (!in_array($kriteria->kriteria, $headerKriteria)) {
+                        $headerKriteria[$kriteria->id] = $kriteria->kriteria;
+                    }
+                }
             }
         }
-
-        $headerKriteria = $kriteriaSet; // key = id_kriteria, value = nama_kriteria
 
         return view('admin.perhitungan_smart.index', compact(
             'calonPenerimas',
@@ -101,7 +122,6 @@ class SmartCalculationController extends Controller
         $HitunganSmart->update([
             'calon_penerima_id' => $validated['calon_penerima_id'],
             'jenis_beasiswa_id' => $validated['jenis_beasiswa_id'],
-            // Penting: simpan nilai_kriteria dalam bentuk JSON string
             'nilai_kriteria' => json_encode($validated['nilai_kriteria']),
         ]);
 

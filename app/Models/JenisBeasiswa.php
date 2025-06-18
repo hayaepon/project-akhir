@@ -11,6 +11,7 @@ class JenisBeasiswa extends Model
     public function kriterias()
     {
         return $this->hasMany(Kriteria::class, 'jenis_beasiswa_id');
+        return $this->belongsToMany(Kriteria::class, 'jenis_beasiswa_kriteria');
     }
     public function index()
 {

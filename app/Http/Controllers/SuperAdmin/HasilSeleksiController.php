@@ -99,6 +99,9 @@ class HasilSeleksiController extends Controller
 
     $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
     $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : collect();
+    $kriterias = $beasiswaFilter
+    ? JenisBeasiswa::where('nama', $beasiswaFilter)->first()?->kriterias ?? collect()
+    : Kriteria::all();
 
     $hasilSeleksiQuery = HasilSeleksi::with('calonPenerima');
     if ($jenisBeasiswa) {
@@ -109,11 +112,16 @@ class HasilSeleksiController extends Controller
     if ($format == 'pdf') {
         $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
         return $pdf->download('hasil-seleksi.pdf');
+        return $this->belongsToMany(Kriteria::class, 'jenis_beasiswa_kriteria');
     }
 
     if ($format == 'excel') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        foreach ($kriterias as $kriteria) {
+        $header[] = $kriteria->kriteria;
+}
+
 
         // Header
         $header = ['No', 'Nama Calon Penerima'];
