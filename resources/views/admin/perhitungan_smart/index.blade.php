@@ -25,12 +25,12 @@
             @csrf
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <!-- Nama Calon Penerima -->
-                <div class="flex flex-col">
+                <div class="flex flex-col h-full">
                     <label for="calon_penerima" class="mb-2 font-medium">Nama Calon Penerima</label>
-                    <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
+                    <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow w-full" required>
                         <option value="">Pilih Calon Penerima</option>
                         @foreach ($calonPenerimas as $calon)
-                        <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }}>
+                        <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }} data-beasiswa="{{ $calon->jenis_beasiswa_id }}">
                             {{ $calon->nama_calon_penerima }}
                         </option>
                         @endforeach
@@ -40,10 +40,10 @@
                     @enderror
                 </div>
 
-                <!-- Pilih Jenis Beasiswa -->
-                <div class="flex flex-col">
+                <!-- Pilih Jenis Beasiswa (Hidden by default) -->
+                <div class="flex flex-col h-full" id="beasiswa-container" style="display: none;">
                     <label for="jenis_beasiswa_id" class="mb-2 font-medium">Beasiswa</label>
-                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
+                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow w-full" required>
                         <option value="">Pilih Beasiswa</option>
                         @foreach ($jenisBeasiswas as $beasiswa)
                         <option value="{{ $beasiswa->id }}" {{ old('jenis_beasiswa_id') == $beasiswa->id ? 'selected' : '' }}>
@@ -58,7 +58,7 @@
             </div>
 
             <!-- Kriteria Dinamis -->
-            <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+            <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6" style="display: none;"></div>
 
             <div class="flex space-x-4 justify-start mt-4">
                 <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
@@ -79,13 +79,12 @@
                 </button>
                 <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden z-10">
                     <form action="{{ route('admin.perhitungan_smart.index') }}" method="GET" id="filterForm">
-                        <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <select name="jenis_beasiswa" class="w-full p-2 border border-gray-300 rounded-lg" id="filterSelect">
                             <option value="">Semua Beasiswa</option>
                             @foreach ($jenisBeasiswas as $jenis)
                             <option value="{{ $jenis->id }}" @if(request()->get('jenis_beasiswa') == $jenis->id) selected @endif>{{ $jenis->nama }}</option>
                             @endforeach
                         </select>
-                        <button type="submit" class="w-full bg-blue-500 text-white py-1 px-2 rounded-b-lg">Apply</button>
                     </form>
                 </div>
             </div>
@@ -140,20 +139,23 @@
 {{-- Script: Load Kriteria --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    /* === Elemen dasar === */
-    const beasiswaSelect   = document.getElementById('jenis_beasiswa_id');
+    const calonPenerimaSelect = document.getElementById('calon_penerima');
+    const beasiswaContainer = document.getElementById('beasiswa-container');
+    const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
     const kriteriaContainer = document.getElementById('kriteria-container');
-    const filterButton   = document.getElementById('filterButton');
+    const filterButton = document.getElementById('filterButton');
     const filterDropdown = document.getElementById('filterDropdown');
-
-    /* ---------- FUNGSI BANTUAN ---------- */
+    const filterSelect = document.getElementById('filterSelect');
 
     // Clear kriteria
-    const clearKriteria = () => { kriteriaContainer.innerHTML = ''; };
+    const clearKriteria = () => { 
+        kriteriaContainer.innerHTML = '';
+        kriteriaContainer.style.display = 'none';
+    };
 
     // Generate input kriteria
     const createKriteriaInput = (kriteria) => {
-        const wrap  = document.createElement('div');
+        const wrap = document.createElement('div');
         wrap.className = 'flex flex-col';
 
         const lbl = document.createElement('label');
@@ -181,6 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load kriteria sesuai jenis beasiswa
     const loadKriteria = (id) => {
+        if (!id) {
+            clearKriteria();
+            return;
+        }
         fetch(`/admin/perhitungan-smart/kriteria/${id}`)
             .then(r => r.json())
             .then(data => {
@@ -190,26 +196,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     data.forEach(k => kriteriaContainer.appendChild(createKriteriaInput(k)));
                 }
+                kriteriaContainer.style.display = 'grid';
             })
             .catch(() => {
                 kriteriaContainer.innerHTML = '<p class="text-red-600">Gagal memuat kriteria.</p>';
+                kriteriaContainer.style.display = 'block';
             });
     };
 
-    /* ---------- EVENT HANDLERS ---------- */
-
-    // Ketika select beasiswa di form input berubah
-    beasiswaSelect.addEventListener('change', () => {
-        beasiswaSelect.value ? loadKriteria(beasiswaSelect.value) : clearKriteria();
+    // Ketika select calon penerima di form input berubah
+    calonPenerimaSelect.addEventListener('change', () => {
+        const selectedOption = calonPenerimaSelect.options[calonPenerimaSelect.selectedIndex];
+        const beasiswaId = selectedOption ? selectedOption.getAttribute('data-beasiswa') : '';
+        if (calonPenerimaSelect.value) {
+            beasiswaContainer.style.display = 'flex'; // Show beasiswa
+            beasiswaSelect.value = beasiswaId ? beasiswaId : '';
+            loadKriteria(beasiswaId);
+        } else {
+            beasiswaContainer.style.display = 'none'; // Hide beasiswa
+            beasiswaSelect.value = '';
+            clearKriteria();
+        }
     });
 
     // Muat kriteria jika ada nilai lama (edit / error validation)
     @if(old('jenis_beasiswa_id'))
+        beasiswaContainer.style.display = 'flex';
         loadKriteria({{ old('jenis_beasiswa_id') }});
     @endif
 
+    // Otomatis kirim form filter ketika dropdown berubah
+    filterSelect.addEventListener('change', function() {
+        this.closest('form').submit();
+    });
+
     // Toggle tampilan dropdown filter
-    filterButton.addEventListener('click', () => filterDropdown.classList.toggle('hidden'));
+    filterButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterDropdown.classList.toggle('hidden');
+    });
 
     // Klik di luar dropdown ➜ tutup
     document.addEventListener('click', (e) => {
