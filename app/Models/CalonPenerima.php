@@ -21,11 +21,9 @@ class CalonPenerima extends Model
         return $this->belongsTo(JenisBeasiswa::class, 'jenis_beasiswa_id');
     }
 
-    public function subkriterias()
+    public function subkriteria()
     {
-        return $this->belongsToMany(Subkriteria::class, 'calon_penerima_subkriteria')
-            ->withPivot('nilai', 'kriteria_id')
-            ->withTimestamps();
+        return $this->belongsTo(Subkriteria::class);
     }
 
     public function subkriteriasTerpilih()
