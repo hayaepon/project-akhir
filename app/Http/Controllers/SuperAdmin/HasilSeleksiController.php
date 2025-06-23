@@ -48,79 +48,114 @@ class HasilSeleksiController extends Controller
     }
 
 
-    public function hitung()
-    {
-        $kriterias = Kriteria::all();
-        $calonPenerimas = CalonPenerima::all();
+  public function hitung()
+{
+    $kriterias = Kriteria::all();
+    $jenisBeasiswas = JenisBeasiswa::all();
+    $dataHasilAll = [];
 
-        $dataHasil = [];
+    if ($kriterias->isEmpty()) {
+        return back()->with('error', 'Data kriteria belum tersedia.');
+    }
 
+    foreach ($jenisBeasiswas as $jenisBeasiswa) {
+        $calonPenerimas = CalonPenerima::where('jenis_beasiswa_id', $jenisBeasiswa->id)->get();
+
+        if ($calonPenerimas->isEmpty()) continue;
+
+        $nilaiPerKriteria = [];
+
+        // Ambil nilai angka untuk min-max
         foreach ($calonPenerimas as $calon) {
             $hitungan = HitunganSmart::where('calon_penerima_id', $calon->id)->first();
-
-            if (!$hitungan) {
-                continue; // Lewati jika belum ada data di hitungan_smarts
-            }
+            if (!$hitungan) continue;
 
             $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria, true);
-
-            $totalSkor = 0;
-            $skorPerKriteria = [];
 
             foreach ($kriterias as $kriteria) {
                 $nilaiTeks = $nilaiKriteriaJSON[$kriteria->id] ?? null;
 
                 if ($nilaiTeks) {
                     $sub = Subkriteria::where('kriteria_id', $kriteria->id)
-                        ->where('sub_kriteria', $nilaiTeks)
+                        ->whereRaw('LOWER(sub_kriteria) = LOWER(?)', [$nilaiTeks])
                         ->first();
 
                     if ($sub) {
-                        $nilai = $sub->nilai;
-
-                        if ($kriteria->atribut === 'benefit') {
-                            $max = Subkriteria::where('kriteria_id', $kriteria->id)->max('nilai') ?: 1;
-                            $normalisasi = $nilai / $max;
-                        } elseif ($kriteria->atribut === 'cost') {
-                            $min = Subkriteria::where('kriteria_id', $kriteria->id)->min('nilai') ?: 1;
-                            $normalisasi = $min / $nilai;
-                        } else {
-                            $normalisasi = 0;
-                        }
-
-                        $skor = $normalisasi * $kriteria->bobot;
-
-                        $skorPerKriteria[$kriteria->id] = round($skor, 4);
-                        $totalSkor += $skor;
-                    } else {
-                        $skorPerKriteria[$kriteria->id] = 0;
+                        $nilaiPerKriteria[$kriteria->id][] = $sub->nilai;
                     }
+                }
+            }
+        }
+
+        // Hitung utility dan skor akhir
+        foreach ($calonPenerimas as $calon) {
+            $hitungan = HitunganSmart::where('calon_penerima_id', $calon->id)->first();
+            if (!$hitungan) continue;
+
+            $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria, true);
+            $utilityPerKriteria = [];
+            $totalSkor = 0;
+
+            foreach ($kriterias as $kriteria) {
+                $nilaiTeks = $nilaiKriteriaJSON[$kriteria->id] ?? null;
+                $nilaiAngka = 0;
+
+                if ($nilaiTeks) {
+                    $sub = Subkriteria::where('kriteria_id', $kriteria->id)
+                        ->whereRaw('LOWER(sub_kriteria) = LOWER(?)', [$nilaiTeks])
+                        ->first();
+
+                    if ($sub) {
+                        $nilaiAngka = $sub->nilai;
+                    }
+                }
+
+                $listNilai = $nilaiPerKriteria[$kriteria->id] ?? null;
+
+                if ($listNilai && $nilaiAngka > 0) {
+                    $max = collect($listNilai)->max() ?: 1;
+                    $min = collect($listNilai)->min() ?: 1;
+
+                    if ($max == $min) {
+                        $utility = 1;
+                    } elseif ($kriteria->atribut === 'benefit') {
+                        $utility = ($nilaiAngka - $min) / ($max - $min);
+                    } elseif ($kriteria->atribut === 'cost') {
+                        $utility = ($max - $nilaiAngka) / ($max - $min);
+                    } else {
+                        $utility = 0;
+                    }
+
+                    $utility = round($utility, 4);
+                    $utilityPerKriteria[$kriteria->id] = $utility;
+
+                    // Hitung skor akhir
+                    $totalSkor += $utility * $kriteria->bobot;
                 } else {
-                    $skorPerKriteria[$kriteria->id] = 0;
+                    $utilityPerKriteria[$kriteria->id] = 0;
                 }
             }
 
-
-            $dataHasil[] = [
+            $dataHasilAll[] = [
                 'calon_penerima_id' => $calon->id,
                 'jenis_beasiswa_id' => $calon->jenis_beasiswa_id,
                 'hasil' => round($totalSkor, 4),
-                'nilai_kriteria' => json_encode($skorPerKriteria),
-                'keterangan' => null,
+                'nilai_kriteria' => json_encode($utilityPerKriteria),
             ];
         }
-
-        // Simpan hasil ke tabel hasil_seleksis
-        HasilSeleksi::query()->delete(); // kosongkan data lama
-
-        foreach ($dataHasil as $hasil) {
-            HasilSeleksi::create($hasil);
-        }
-
-        return redirect()->route('hasil-seleksi.index', ['beasiswa' => $calonPenerimas->first()->jenisBeasiswa->nama])
-            ->with('success', 'Perhitungan berhasil dilakukan.');
     }
 
+    // Simpan ke DB
+    \DB::transaction(function () use ($dataHasilAll) {
+        HasilSeleksi::query()->delete();
+        foreach ($dataHasilAll as $hasil) {
+            HasilSeleksi::create($hasil);
+        }
+    });
+
+    return redirect()->route('hasil-seleksi.index')
+        ->with('success', 'Perhitungan SMART (utility 0-1 dan skor akhir) berhasil dilakukan.');
+}
 
     public function export(Request $request)
     {

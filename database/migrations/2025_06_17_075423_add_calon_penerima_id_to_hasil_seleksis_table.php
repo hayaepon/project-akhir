@@ -9,15 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up()
+{
     Schema::table('hasil_seleksis', function (Blueprint $table) {
-        $table->unsignedBigInteger('calon_penerima_id')->nullable();
-
-        // Kalau ingin tambahkan foreign key juga:
-        // $table->foreign('calon_penerima_id')->references('id')->on('calon_penerimas')->onDelete('cascade');
+        if (!Schema::hasColumn('hasil_seleksis', 'calon_penerima_id')) {
+            $table->unsignedBigInteger('calon_penerima_id')->nullable();
+        }
     });
 }
+
     /**
      * Reverse the migrations.
      */

@@ -14,6 +14,7 @@ class HasilSeleksi extends Model
         'jenis_beasiswa_id',
         'hasil',
         'nilai_kriteria',
+        'utility_kriteria',
         'keterangan',
     ];
 
