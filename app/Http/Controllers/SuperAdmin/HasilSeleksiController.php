@@ -70,7 +70,7 @@ class HasilSeleksiController extends Controller
             $hitungan = HitunganSmart::where('calon_penerima_id', $calon->id)->first();
             if (!$hitungan) continue;
 
-            $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria, true);
+            $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria ?? '{}', true);
 
             foreach ($kriterias as $kriteria) {
                 $nilaiTeks = $nilaiKriteriaJSON[$kriteria->id] ?? null;
@@ -92,7 +92,7 @@ class HasilSeleksiController extends Controller
             $hitungan = HitunganSmart::where('calon_penerima_id', $calon->id)->first();
             if (!$hitungan) continue;
 
-            $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria, true);
+            $nilaiKriteriaJSON = json_decode($hitungan->nilai_kriteria ?? '{}', true);
             $utilityPerKriteria = [];
             $totalSkor = 0;
 

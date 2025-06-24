@@ -31,7 +31,7 @@
                         <i class="fas fa-filter mr-2"></i> Filters
                     </button>
                     <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
-                        <form action="{{ route('hasil-seleksi.index') }}" method="GET" id="filterForm">
+                        <form action="{{ route('admin.Hasil_Seleksi.index') }}" method="GET" id="filterForm">
                             @csrf
                             <select name="beasiswa" id="filterBeasiswa"
                                 class="w-full p-2 border border-gray-300 rounded-lg"
