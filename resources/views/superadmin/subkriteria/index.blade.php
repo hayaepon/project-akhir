@@ -63,7 +63,6 @@
             <div class="flex space-x-4">
                 <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
                 <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
-
             </div>
         </div>
 
@@ -81,29 +80,57 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($subKriterias as $subKriteria)
-                <tr class="border-b" data-beasiswa="{{ strtolower($subKriteria->kriteria->jenisBeasiswa->nama ?? '') }}">
-                    <td class="border px-6 py-2">{{ $loop->iteration }}</td>
-                    <td class="border px-6 py-2">{{ $subKriteria->kriteria->jenisBeasiswa->nama ?? '-' }}</td>
-                    <td class="border px-6 py-2">{{ $subKriteria->kriteria->kriteria }}</td>
-                    <td class="border px-6 py-2">{{ $subKriteria->sub_kriteria }}</td>
-                    <td class="border px-6 py-2">{{ $subKriteria->nilai }}</td>
-                    <td class="border px-6 py-2 text-center">
-                        <div class="flex justify-center items-center space-x-3">
-                            <a href="{{ route('subkriteria.edit', $subKriteria->id) }}" class="text-yellow-500 hover:underline">
-                                <i class="fas fa-edit text-yellow-300"></i>
-                            </a>
-                            <span class="text-gray-400">|</span>
-                            <form action="{{ route('subkriteria.destroy', $subKriteria->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:underline">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                @php $no = 1; @endphp
+                @foreach ($grouped as $kriteria_id => $items)
+                    @php
+                        $rowspan = count($items);
+                        $kriteria = $items->first()->kriteria;
+                        $beasiswa = $items->first()->kriteria->jenisBeasiswa;
+                    @endphp
+                    <tr class="border-b" data-beasiswa="{{ strtolower($beasiswa->nama ?? '') }}">
+                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $no }}</td>
+                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $beasiswa->nama ?? '-' }}</td>
+                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $kriteria->kriteria }}</td>
+                        <td class="border px-6 py-2">{{ $items->first()->sub_kriteria }}</td>
+                        <td class="border px-6 py-2">{{ $items->first()->nilai }}</td>
+                        <td class="border px-6 py-2 text-center">
+                            <div class="flex justify-center items-center space-x-3">
+                                <a href="{{ route('subkriteria.edit', $items->first()->id) }}" class="text-yellow-500 hover:underline">
+                                    <i class="fas fa-edit text-yellow-300"></i>
+                                </a>
+                                <span class="text-gray-400">|</span>
+                                <form action="{{ route('subkriteria.destroy', $items->first()->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:underline">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @foreach ($items->slice(1) as $item)
+                    <tr class="border-b" data-beasiswa="{{ strtolower($beasiswa->nama ?? '') }}">
+                        <td class="border px-6 py-2">{{ $item->sub_kriteria }}</td>
+                        <td class="border px-6 py-2">{{ $item->nilai }}</td>
+                        <td class="border px-6 py-2 text-center">
+                            <div class="flex justify-center items-center space-x-3">
+                                <a href="{{ route('subkriteria.edit', $item->id) }}" class="text-yellow-500 hover:underline">
+                                    <i class="fas fa-edit text-yellow-300"></i>
+                                </a>
+                                <span class="text-gray-400">|</span>
+                                <form action="{{ route('subkriteria.destroy', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:underline">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                    @php $no++; @endphp
                 @endforeach
             </tbody>
         </table>

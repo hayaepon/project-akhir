@@ -13,10 +13,15 @@ class SubkriteriaController extends Controller
     public function index()
     {
         $jenisBeasiswas = JenisBeasiswa::all();
-        $kriterias = Kriteria::with('jenisBeasiswa')->get();
         $subKriterias = Subkriteria::with('kriteria.jenisBeasiswa')->get();
-
-        return view('superadmin.subkriteria.index', compact('jenisBeasiswas', 'kriterias', 'subKriterias'));
+        
+        // Kelompokkan subkriteria berdasarkan kriteria_id
+        $grouped = $subKriterias->groupBy('kriteria_id');
+        
+        return view('superadmin.subkriteria.index', compact(
+            'jenisBeasiswas',
+            'grouped'
+        ));
     }
 
     public function store(Request $request)
@@ -44,8 +49,13 @@ class SubkriteriaController extends Controller
         $subKriteria = Subkriteria::findOrFail($id);
         $jenisBeasiswas = JenisBeasiswa::all();
         $kriterias = Kriteria::where('jenis_beasiswa_id', $subKriteria->jenis_beasiswa_id)->get();
-
-        return view('superadmin.subkriteria.edit', compact('subKriteria', 'kriterias', 'jenisBeasiswas'));
+        
+        // Untuk edit tidak perlu grouped
+        return view('superadmin.subkriteria.edit', compact(
+            'subKriteria',
+            'kriterias',
+            'jenisBeasiswas'
+        ));
     }
 
     public function update(Request $request, $id)
