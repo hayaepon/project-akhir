@@ -11,11 +11,16 @@ class KriteriaController extends Controller
 {
     public function index()
     {
-        // Eager loading agar data beasiswa ikut ter-load
+        // Eager loading with grouping
         $kriterias = Kriteria::with('jenisBeasiswa')->get();
         $jenisBeasiswas = JenisBeasiswa::all();
+        
+        // Group kriteria by beasiswa name
+        $groupedKriterias = $kriterias->groupBy(function($item) {
+            return $item->jenisBeasiswa->nama ?? 'Tanpa Beasiswa';
+        });
 
-        return view('superadmin.kriteria.index', compact('kriterias', 'jenisBeasiswas'));
+        return view('superadmin.kriteria.index', compact('groupedKriterias', 'jenisBeasiswas'));
     }
 
     public function store(Request $request)
@@ -41,6 +46,7 @@ class KriteriaController extends Controller
     {
         $kriteria = Kriteria::findOrFail($id);
         $jenisBeasiswas = JenisBeasiswa::all();
+        
         return view('superadmin.kriteria.edit', compact('kriteria', 'jenisBeasiswas'));
     }
 
@@ -54,7 +60,6 @@ class KriteriaController extends Controller
         ]);
 
         $kriteria = Kriteria::findOrFail($id);
-
         $kriteria->update([
             'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
             'kriteria' => $request->kriteria,

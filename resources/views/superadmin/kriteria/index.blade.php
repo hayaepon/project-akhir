@@ -36,7 +36,7 @@
             </div>
 
             <!-- Atribut -->
-            <div class="flex flex-col mb-4">
+            <div class="flex flex-col mb-8">
                 <label for="bobot" class="text-sm font-medium text-black-700 text-[16px] mb-2">Atribut</label>
                 <select id="atribut" name="atribut" class="w-full p-3 border rounded-lg shadow-sm" required>
                     <option value="">Pilih Atribut</option>
@@ -59,29 +59,51 @@
             <h3 class="text-xl font-medium text-[22px]">Data Kriteria & Bobot</h3>
 
             <!-- Tombol Switch KIP-K & Tahfidz di kanan -->
-            <div class="flex space-x-4">
+            <!-- <div class="flex space-x-4">
                 <button id="kipk-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">KIP-K</button>
                 <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
-            </div>
+            </div> -->
         </div>
 
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
 
         <table class="min-w-full mt-6 table-auto">
-            <thead>
-                <tr class="bg-blue-800 text-white">
-                    <th class="border px-6 py-2 text-left font-normal">Beasiswa</th>
-                    <th class="border px-6 py-2 text-left font-normal">Kriteria</th>
-                    <th class="border px-6 py-2 text-left font-normal">Bobot</th>
-                    <th class="border px-6 py-2 text-left font-normal">Atribut</th>
-                    <th class="border px-6 py-2 text-left font-normal">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($kriterias as $kriteria)
-                <tr class="bg-white" data-beasiswa="{{ strtolower($kriteria->jenisBeasiswa->nama ?? '') }}">
-                    <td class="border px-6 py-2">{{ $kriteria->jenisBeasiswa->nama ?? '-' }}</td>
+    <thead>
+        <tr class="bg-blue-800 text-white">
+            <th class="border px-6 py-2 text-left font-normal">Beasiswa</th>
+            <th class="border px-6 py-2 text-left font-normal">Kriteria</th>
+            <th class="border px-6 py-2 text-left font-normal">Bobot</th>
+            <th class="border px-6 py-2 text-left font-normal">Atribut</th>
+            <th class="border px-6 py-2 text-left font-normal">Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($groupedKriterias as $beasiswaNama => $kriteriaList)
+            <tr class="bg-gray-100">
+                <td class="border px-6 py-2" rowspan="{{ count($kriteriaList) }}">{{ $beasiswaNama }}</td>
+                <td class="border px-6 py-2">{{ $kriteriaList[0]->kriteria }}</td>
+                <td class="border px-6 py-2">{{ $kriteriaList[0]->bobot }}</td>
+                <td class="border px-6 py-2 capitalize">{{ $kriteriaList[0]->atribut }}</td>
+                <td class="border px-6 py-2 text-center">
+                    <!-- Aksi -->
+                    <div class="flex justify-center items-center space-x-3">
+                        <a href="{{ route('kriteria.edit', $kriteriaList[0]->id) }}" class="text-yellow-500 hover:text-yellow-700">
+                            <i class="fas fa-edit text-yellow-300"></i>
+                        </a>
+                        <span class="text-gray-400">|</span>
+                        <form action="{{ route('kriteria.destroy', $kriteriaList[0]->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @foreach($kriteriaList->slice(1) as $kriteria)
+                <tr>
                     <td class="border px-6 py-2">{{ $kriteria->kriteria }}</td>
                     <td class="border px-6 py-2">{{ $kriteria->bobot }}</td>
                     <td class="border px-6 py-2 capitalize">{{ $kriteria->atribut }}</td>
@@ -101,9 +123,11 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        @endforeach
+    </tbody>
+</table>
+
     </div>
 
 </div>

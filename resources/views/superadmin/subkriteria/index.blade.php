@@ -71,7 +71,7 @@
         <table class="min-w-full mt-6 table-auto">
             <thead>
                 <tr class="bg-blue-800 text-white">
-                    <th class="border px-6 py-2 text-left font-normal">No</th>
+                    <!-- <th class="border px-6 py-2 text-left font-normal">No</th> -->
                     <th class="border px-6 py-2 text-left font-normal">Beasiswa</th>
                     <th class="border px-6 py-2 text-left font-normal">Kriteria</th>
                     <th class="border px-6 py-2 text-left font-normal">Sub Kriteria</th>
@@ -88,7 +88,7 @@
                         $beasiswa = $items->first()->kriteria->jenisBeasiswa;
                     @endphp
                     <tr class="border-b" data-beasiswa="{{ strtolower($beasiswa->nama ?? '') }}">
-                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $no }}</td>
+                        <!-- <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $no }}</td> -->
                         <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $beasiswa->nama ?? '-' }}</td>
                         <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $kriteria->kriteria }}</td>
                         <td class="border px-6 py-2">{{ $items->first()->sub_kriteria }}</td>
