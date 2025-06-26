@@ -18,34 +18,35 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class HasilSeleksiController extends Controller
 {
     public function index(Request $request)
-    {
-        // Jalankan perhitungan SMART sebelum menampilkan data
-        $this->hitung();
+{
+    // Jalankan perhitungan SMART sebelum menampilkan data
+    $this->hitung();
 
-        $beasiswaFilter = $request->get('beasiswa');
+    $beasiswaFilter = $request->get('beasiswa');
 
-        $query = HasilSeleksi::with('calonPenerima');
+    $query = HasilSeleksi::with('calonPenerima');
 
-        if ($beasiswaFilter) {
-            $query->whereHas('calonPenerima.jenisBeasiswa', function ($q) use ($beasiswaFilter) {
-                $q->where('nama', $beasiswaFilter);
-            });
-        }
-
-        $hasilSeleksi = $query->orderBy('hasil', 'desc')->get();
-
-        // Ambil header kriteria berdasarkan filter
-        if ($beasiswaFilter) {
-            $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
-            $headerKriteria = $jenisBeasiswa
-                ? $jenisBeasiswa->kriterias->pluck('kriteria', 'id')
-                : collect();
-        } else {
-            $headerKriteria = Kriteria::pluck('kriteria', 'id');
-        }
-
-        return view('superadmin.hasil_seleksi.index', compact('hasilSeleksi', 'headerKriteria'));
+    if ($beasiswaFilter) {
+        $query->whereHas('calonPenerima.jenisBeasiswa', function ($q) use ($beasiswaFilter) {
+            $q->where('nama', $beasiswaFilter);
+        });
     }
+
+    // Urutkan dari skor tertinggi ke terendah
+    $hasilSeleksi = $query->get()->sortByDesc('hasil')->values(); // penting: reset index agar ranking benar
+
+    // Ambil header kriteria berdasarkan filter
+    if ($beasiswaFilter) {
+        $jenisBeasiswa = JenisBeasiswa::where('nama', $beasiswaFilter)->first();
+        $headerKriteria = $jenisBeasiswa
+            ? $jenisBeasiswa->kriterias->pluck('kriteria', 'id')
+            : collect();
+    } else {
+        $headerKriteria = Kriteria::pluck('kriteria', 'id');
+    }
+
+    return view('superadmin.hasil_seleksi.index', compact('hasilSeleksi', 'headerKriteria'));
+}
 
 
   public function hitung()
@@ -157,7 +158,7 @@ class HasilSeleksiController extends Controller
         ->with('success', 'Perhitungan SMART (utility 0-1 dan skor akhir) berhasil dilakukan.');
 }
 
-    public function export(Request $request)
+   public function export(Request $request)
 {
     $format = $request->input('format');
     $beasiswaFilter = $request->get('beasiswa');
@@ -168,22 +169,27 @@ class HasilSeleksiController extends Controller
     // Ambil kriteria sesuai jenis beasiswa
     $kriterias = $jenisBeasiswa ? $jenisBeasiswa->kriterias : Kriteria::all();
 
-    // Ambil hasil seleksi sesuai jenis beasiswa dan URUTKAN dari nilai terbesar ke terkecil
+    // Ambil hasil seleksi sesuai jenis beasiswa dan urutkan
     $hasilSeleksi = HasilSeleksi::with('calonPenerima')
         ->when($jenisBeasiswa, function ($query) use ($jenisBeasiswa) {
             $query->where('jenis_beasiswa_id', $jenisBeasiswa->id);
         })
-        ->orderBy('hasil', 'desc') // Pastikan diurutkan
+        ->orderBy('hasil', 'desc')
         ->get();
 
+    // Tambahkan keterangan ranking ke setiap hasil seleksi
+    foreach ($hasilSeleksi as $index => $item) {
+        $item->keterangan = 'Ranking ' . ($index + 1);
+    }
+
     // EXPORT PDF
-    if ($format == 'pdf') {
+    if ($format === 'pdf') {
         $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
         return $pdf->download('hasil-seleksi.pdf');
     }
 
     // EXPORT EXCEL
-    if ($format == 'excel') {
+    if ($format === 'excel') {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -193,7 +199,7 @@ class HasilSeleksiController extends Controller
             $header[] = $kriteria->kriteria;
         }
         $header[] = 'Hasil';
-        $header[] = 'Keterangan';
+        $header[] = 'Ranking';
 
         $sheet->fromArray([$header], null, 'A1');
 
@@ -218,7 +224,7 @@ class HasilSeleksiController extends Controller
             ],
         ]);
 
-        // Data Rows
+        // Isi data
         $row = 2;
         foreach ($hasilSeleksi as $index => $item) {
             $nilaiKriteria = json_decode($item->nilai_kriteria, true);
@@ -232,30 +238,29 @@ class HasilSeleksiController extends Controller
             }
 
             $rowData[] = $item->hasil;
-            $rowData[] = $item->keterangan ?? '-';
+            $rowData[] = ($index + 1);
 
             $sheet->fromArray([$rowData], null, 'A' . $row);
 
-            // Apply border to each row
-            $sheet->getStyle('A' . $row . ':' . $sheet->getHighestColumn() . $row)
-                ->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
-                        ],
+            // Tambahkan border ke tiap baris
+            $sheet->getStyle('A' . $row . ':' . $sheet->getHighestColumn() . $row)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
                     ],
-                ]);
+                ],
+            ]);
 
             $row++;
         }
 
-        // Auto size columns
+        // Auto size kolom
         foreach (range('A', $sheet->getHighestColumn()) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // Output file
+        // Simpan dan download
         $writer = new Xlsx($spreadsheet);
         $filename = 'hasil-seleksi.xlsx';
         $tempFile = tempnam(sys_get_temp_dir(), $filename);

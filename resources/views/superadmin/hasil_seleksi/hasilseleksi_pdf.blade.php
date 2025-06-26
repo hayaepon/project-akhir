@@ -46,7 +46,7 @@
                     <th>{{ $kriteria->kriteria }}</th>
                 @endforeach
                 <th>Hasil</th>
-                <th>Keterangan</th>
+                <th>Ranking</th>
             </tr>
         </thead>
         <tbody>
@@ -61,7 +61,7 @@
                         <td>{{ $nilaiKriteria[$kriteria->id] ?? 0 }}</td>
                     @endforeach
                     <td>{{ $data->hasil }}</td>
-                    <td>{{ $data->keterangan ?? '-' }}</td>
+                    <td>{{ $index + 1 }}</td>
                 </tr>
             @endforeach
         </tbody>
