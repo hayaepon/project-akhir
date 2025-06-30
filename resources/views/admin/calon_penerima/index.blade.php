@@ -47,8 +47,33 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function () {
-        $('#tabelCalon').DataTable();
+    document.addEventListener("DOMContentLoaded", function () {
+        const entriesInput = document.getElementById("entries");
+        const searchInput = document.getElementById("search");
+        const table = document.getElementById("tabelCalon");
+        const rows = Array.from(table.querySelectorAll("tbody tr"));
+
+        function updateTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const maxEntries = parseInt(entriesInput.value) || rows.length;
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                const matchesSearch = rowText.includes(searchTerm);
+
+                if (matchesSearch && visibleCount < maxEntries) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        entriesInput.addEventListener("input", updateTable);
+        searchInput.addEventListener("input", updateTable);
+        updateTable(); // initial load
     });
 </script>
 @endpush
