@@ -3,18 +3,24 @@
 @section('title', 'Dashboard')
 
 @section('content')
+@php
+    $roleName = ucwords(str_replace('_', ' ', Auth::user()->role));
+    $userName = Auth::user()->name;
+@endphp
+
 
 <!-- Sambutan -->
 <div class="bg-white p-6 mb-8">
     <div class="flex justify-center mb-4">
         <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16">
     </div>
-    <h2 class="text-center text-2xl font-bold mb-4">Selamat Datang Admin</h2>
+    <h2 class="text-center text-2xl font-bold mb-4">Selamat Datang {{ $roleName }} - {{ $userName }}</h2>
     <p class="text-center text-gray-600 mb-4">
         Selamat datang di Sistem Pendukung Keputusan Penerimaan Beasiswa STMIK Antar Bangsa.
         Kelola data pendaftar, atur bobot kriteria, dan lakukan seleksi beasiswa dengan cepat dan akurat menggunakan metode SMART.
     </p>
 </div>
+
 
 <!-- Ringkasan Data -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
