@@ -48,16 +48,16 @@
         <!-- Menu Perhitungan SMART -->
         <a href="{{ route('admin.perhitungan_smart.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 cursor-pointer text-white">
             <i data-lucide="calculator" class="w-5 h-5"></i>
-            <span>Pertanyaan Wawancara</span>
+            <span>Input Nilai</span>
         </a>
 
 
-        <!-- Menu Hasil Seleksi -->
+        <!-- Menu Hasil Seleksi 
         <a href="{{ route('admin.Hasil_Seleksi.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-blue-700 cursor-pointer text-white">
             <i data-lucide="check-circle" class="w-5 h-5"></i>
             <span>Hasil Seleksi</span>
         </a>
-</nav>
+</nav> -->
 
     <!-- Tombol Logout -->
 <div class="px-4 py-6 flex justify-center">

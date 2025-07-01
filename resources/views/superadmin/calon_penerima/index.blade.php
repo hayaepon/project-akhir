@@ -23,7 +23,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="flex flex-col">
-                        <label for="asal_sekolah" class="text-sm font-medium text-black-700 text-[16px] mb-2">Asal Sekolah</label>
+                        <label for="asal_sekolah" class="text-sm font-medium text-black-700 text-[16px] mb-2">NISN</label>
                         <input type="text" id="asal_sekolah" name="asal_sekolah" class="w-full p-3 border rounded-lg shadow-sm" required />
                     </div>
                     <div class="flex flex-col">
@@ -66,7 +66,7 @@
                         <th class="border px-4 py-2 text-left font-normal">No</th>
                         <th class="border px-4 py-2 text-left font-normal">No Pendaftaran</th>
                         <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
-                        <th class="border px-4 py-2 text-left font-normal">Asal Sekolah</th>
+                        <th class="border px-4 py-2 text-left font-normal">NISN</th>
                         <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
                         <th class="border px-4 py-2 text-left font-normal">Aksi</th>
                     </tr>

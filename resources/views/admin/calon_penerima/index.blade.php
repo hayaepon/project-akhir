@@ -27,7 +27,7 @@
                 <th class="border px-4 py-2 text-left font-normal">No</th>
                 <th class="border px-4 py-2 text-left font-normal">No Pendaftaran</th>
                 <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
-                <th class="border px-4 py-2 text-left font-normal">Asal Sekolah</th>
+                <th class="border px-4 py-2 text-left font-normal">NISN</th>
                 <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
             </tr>
         </thead>
