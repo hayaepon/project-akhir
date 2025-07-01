@@ -71,13 +71,13 @@
     </div>
 </div>
 
-<!-- Grafik Lolos Seleksi -->
+<!-- Grafik Lolos Seleksi
 <div class="bg-white p-6 rounded-lg  mb-8">
     <h3 class="text-xl font-bold mb-4">Grafik Lolos Seleksi</h3>
     <div class="h-64  rounded-lg flex items-center justify-center">
         <canvas id="grafikLolosSeleksi"></canvas>
     </div>
-</div>
+</div>-->
 
 
 @endsection
