@@ -30,6 +30,7 @@ Route::prefix('superadmin')->middleware('auth')->group(function () {
 
     // Super Admin Calon Penerima
     Route::resource('calon-penerima', CalonPenerimaController::class);
+    Route::post('/calon-penerima/import', [CalonPenerimaController::class, 'import'])->name('calon-penerima.import');
 
     // Super Admin Kriteria dan Bobot
     Route::resource('kriteria', KriteriaController::class);

@@ -6,6 +6,8 @@ use App\Models\CalonPenerima;
 use App\Models\JenisBeasiswa;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\DB;
 
 class CalonPenerimaController extends Controller
 {
@@ -70,4 +72,49 @@ class CalonPenerimaController extends Controller
         CalonPenerima::destroy($id);
         return redirect()->route('calon-penerima.index')->with('success', 'Data berhasil dihapus');
     }
+    
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xls,xlsx'
+    ]);
+
+    try {
+        $file = $request->file('file');
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        DB::beginTransaction();
+
+        foreach ($rows as $index => $row) {
+            // Lewati header
+            if ($index === 0 || strtolower($row[0]) == 'no_pendaftaran') {
+                continue;
+            }
+
+            // Validasi isi kolom (pastikan ada 4 kolom)
+            if (count($row) < 4) {
+                continue;
+            }
+
+            // Simpan data jika belum ada
+            CalonPenerima::updateOrCreate(
+                ['no_pendaftaran' => $row[0]], // Cek berdasarkan no_pendaftaran
+                [
+                    'nama_calon_penerima' => $row[1],
+                    'asal_sekolah'        => $row[2],
+                    'jenis_beasiswa_id'   => $row[3],
+                ]
+            );
+        }
+
+        DB::commit();
+
+        return back()->with('success', 'Data berhasil diimport dari spreadsheet.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+    }
+}
 }
