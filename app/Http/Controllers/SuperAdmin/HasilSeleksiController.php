@@ -182,10 +182,16 @@ class HasilSeleksiController extends Controller
         $item->keterangan = 'Ranking ' . ($index + 1);
     }
 
+    // Tentukan nama file
+    $fileName = 'hasil-seleksi';
+    if (!empty($beasiswaFilter)) {
+        $fileName .= '-' . strtolower(str_replace(' ', '-', $beasiswaFilter));
+    }
+
     // EXPORT PDF
     if ($format === 'pdf') {
         $pdf = Pdf::loadView('superadmin.hasil_seleksi.hasilseleksi_pdf', compact('hasilSeleksi', 'kriterias'));
-        return $pdf->download('hasil-seleksi.pdf');
+        return $pdf->download($fileName . '.pdf');
     }
 
     // EXPORT EXCEL
@@ -262,13 +268,13 @@ class HasilSeleksiController extends Controller
 
         // Simpan dan download
         $writer = new Xlsx($spreadsheet);
-        $filename = 'hasil-seleksi.xlsx';
-        $tempFile = tempnam(sys_get_temp_dir(), $filename);
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
 
-        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+        return response()->download($tempFile, $fileName . '.xlsx')->deleteFileAfterSend(true);
     }
 
     return redirect()->back()->with('error', 'Format export tidak valid.');
 }
+
 };
