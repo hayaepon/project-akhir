@@ -4,10 +4,16 @@
 
 @section('content')
 
+@php
+    // Ambil calon penerima yang sudah diinput dari controller
+    $sudahDiinput = $sudahDiinput ?? [];
+@endphp
+
 <div class="container mx-auto px-4 py-6 min-h-screen">
     <div class="bg-white p-6 rounded shadow">
         <h3 class="text-2xl font-semibold mb-2">Pertanyaan Wawancara</h3>
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
+
         @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
             {{ session('success') }}
@@ -30,8 +36,11 @@
                     <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow w-full" required>
                         <option value="">Pilih Calon Penerima</option>
                         @foreach ($calonPenerimas as $calon)
-                        <option value="{{ $calon->id }}" {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }} data-beasiswa="{{ $calon->jenis_beasiswa_id }}">
-                            {{ $calon->nama_calon_penerima }}
+                        <option value="{{ $calon->id }}"
+                            {{ old('calon_penerima_id') == $calon->id ? 'selected' : '' }}
+                            data-beasiswa="{{ $calon->jenis_beasiswa_id }}"
+                            {{ in_array($calon->id, $sudahDiinput) ? 'disabled' : '' }}>
+                            {{ $calon->nama_calon_penerima }}{{ in_array($calon->id, $sudahDiinput) ? '' : '' }}
                         </option>
                         @endforeach
                     </select>
@@ -40,7 +49,7 @@
                     @enderror
                 </div>
 
-                <!-- Pilih Jenis Beasiswa (Hidden by default) -->
+                <!-- Jenis Beasiswa -->
                 <div class="flex flex-col h-full" id="beasiswa-container" style="display: none;">
                     <label for="jenis_beasiswa_id" class="mb-2 font-medium">Beasiswa</label>
                     <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow w-full" required>
@@ -72,7 +81,7 @@
         <div class="flex items-center justify-between mb-2">
             <h3 class="text-xl font-medium text-[22px]">Tabel Perhitungan SMART</h3>
 
-            <!-- Tombol Filter dengan Dropdown -->
+            <!-- Filter -->
             <div class="relative">
                 <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition duration-300 mr-2">
                     <i class="fas fa-filter mr-2"></i> Filters
@@ -147,13 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterDropdown = document.getElementById('filterDropdown');
     const filterSelect = document.getElementById('filterSelect');
 
-    // Clear kriteria
-    const clearKriteria = () => { 
+    const clearKriteria = () => {
         kriteriaContainer.innerHTML = '';
         kriteriaContainer.style.display = 'none';
     };
 
-    // Generate input kriteria
     const createKriteriaInput = (kriteria) => {
         const wrap = document.createElement('div');
         wrap.className = 'flex flex-col';
@@ -181,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return wrap;
     };
 
-    // Load kriteria sesuai jenis beasiswa
     const loadKriteria = (id) => {
         if (!id) {
             clearKriteria();
@@ -204,39 +210,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    // Ketika select calon penerima di form input berubah
     calonPenerimaSelect.addEventListener('change', () => {
         const selectedOption = calonPenerimaSelect.options[calonPenerimaSelect.selectedIndex];
         const beasiswaId = selectedOption ? selectedOption.getAttribute('data-beasiswa') : '';
         if (calonPenerimaSelect.value) {
-            beasiswaContainer.style.display = 'flex'; // Show beasiswa
-            beasiswaSelect.value = beasiswaId ? beasiswaId : '';
+            beasiswaContainer.style.display = 'flex';
+            beasiswaSelect.value = beasiswaId || '';
             loadKriteria(beasiswaId);
         } else {
-            beasiswaContainer.style.display = 'none'; // Hide beasiswa
+            beasiswaContainer.style.display = 'none';
             beasiswaSelect.value = '';
             clearKriteria();
         }
     });
 
-    // Muat kriteria jika ada nilai lama (edit / error validation)
     @if(old('jenis_beasiswa_id'))
         beasiswaContainer.style.display = 'flex';
         loadKriteria({{ old('jenis_beasiswa_id') }});
     @endif
 
-    // Otomatis kirim form filter ketika dropdown berubah
     filterSelect.addEventListener('change', function() {
         this.closest('form').submit();
     });
 
-    // Toggle tampilan dropdown filter
     filterButton.addEventListener('click', (e) => {
         e.stopPropagation();
         filterDropdown.classList.toggle('hidden');
     });
 
-    // Klik di luar dropdown ➜ tutup
     document.addEventListener('click', (e) => {
         if (!filterButton.contains(e.target) && !filterDropdown.contains(e.target)) {
             filterDropdown.classList.add('hidden');
