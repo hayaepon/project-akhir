@@ -25,9 +25,9 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex flex-col">
-                    <label for="asal_sekolah" class="text-sm font-medium text-black-700 text-[16px] mb-2">Asal Sekolah</label>
-                    <input type="text" id="asal_sekolah" name="asal_sekolah" class="w-full p-3 border rounded-lg shadow-sm"
-                        value="{{ old('asal_sekolah', $data->asal_sekolah) }}" required />
+                    <label for="NISN" class="text-sm font-medium text-black-700 text-[16px] mb-2">NISN</label>
+                    <input type="text" id="NISN" name="NISN" class="w-full p-3 border rounded-lg shadow-sm"
+                        value="{{ old('NISN', $data->NISN) }}" required />
                 </div>
 
                 <div class="flex flex-col">

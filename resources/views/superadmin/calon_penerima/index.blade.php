@@ -27,7 +27,7 @@
                 <input type="file" name="file" accept=".xlsx,.xls" required class="p-2 border rounded w-full sm:w-auto">
                 <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Import Excel</button>
             </div>
-            <p class="text-sm mt-2 text-gray-600">* Format file: .xlsx / .xls. Kolom: no_pendaftaran, nama_calon_penerima, asal_sekolah, jenis_beasiswa_id</p>
+            <p class="text-sm mt-2 text-gray-600">* Format file: .xlsx / .xls. Kolom: no_pendaftaran, nama_calon_penerima, NISN, jenis_beasiswa_id</p>
         </form>
     </div>
     
@@ -50,8 +50,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex flex-col">
-                    <label for="asal_sekolah" class="text-sm font-medium text-black-700 text-[16px] mb-2">NISN</label>
-                    <input type="text" id="asal_sekolah" name="asal_sekolah" class="w-full p-3 border rounded-lg shadow-sm" required />
+                    <label for="NISN" class="text-sm font-medium text-black-700 text-[16px] mb-2">NISN</label>
+                    <input type="text" id="NISN" name="NISN" class="w-full p-3 border rounded-lg shadow-sm" required />
                 </div>
                 <div class="flex flex-col">
                     <label for="jenis_beasiswa_id" class="text-sm font-medium text-black-700 text-[16px] mb-2">Pilih Beasiswa</label>
@@ -104,7 +104,7 @@
                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                         <td class="border px-4 py-2">{{ $data->no_pendaftaran }}</td>
                         <td class="border px-4 py-2">{{ $data->nama_calon_penerima }}</td>
-                        <td class="border px-4 py-2">{{ $data->asal_sekolah }}</td>
+                        <td class="border px-4 py-2">{{ $data->NISN }}</td>
                         <td class="border px-4 py-2">{{ $data->jenisBeasiswa->nama ?? '-' }}</td>
                         <td class="border px-4 py-2 text-center">
                             <div class="flex items-center justify-center space-x-2">

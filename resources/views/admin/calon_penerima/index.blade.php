@@ -37,7 +37,7 @@
                     <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                     <td class="border px-4 py-2">{{ $item->no_pendaftaran }}</td>
                     <td class="border px-4 py-2">{{ $item->nama_calon_penerima }}</td>
-                    <td class="border px-4 py-2">{{ $item->asal_sekolah }}</td>
+                    <td class="border px-4 py-2">{{ $item->NISN }}</td>
                     <td class="border px-4 py-2">{{ $item->jenisBeasiswa->nama ?? '-' }}</td>
                 </tr>
             @endforeach

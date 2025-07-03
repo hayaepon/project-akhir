@@ -24,14 +24,14 @@ class CalonPenerimaController extends Controller
         $request->validate([
             'no_pendaftaran' => 'required|unique:calon_penerimas',
             'nama_calon_penerima' => 'required',
-            'asal_sekolah' => 'required',
+            'NISN' => 'required',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
         CalonPenerima::create([
             'no_pendaftaran' => $request->no_pendaftaran,
             'nama_calon_penerima' => $request->nama_calon_penerima,
-            'asal_sekolah' => $request->asal_sekolah,
+            'NISN' => $request->NISN,
             'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
         ]);
 
@@ -53,14 +53,14 @@ class CalonPenerimaController extends Controller
         $request->validate([
             'no_pendaftaran' => 'required|unique:calon_penerimas,no_pendaftaran,' . $id,
             'nama_calon_penerima' => 'required',
-            'asal_sekolah' => 'required',
+            'NISN' => 'required',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
         $data->update([
             'no_pendaftaran' => $request->no_pendaftaran,
             'nama_calon_penerima' => $request->nama_calon_penerima,
-            'asal_sekolah' => $request->asal_sekolah,
+            'NISN' => $request->NISN,
             'jenis_beasiswa_id' => $request->jenis_beasiswa_id,
         ]);
 
@@ -110,7 +110,7 @@ class CalonPenerimaController extends Controller
                     ['no_pendaftaran' => $row[0]], // Cek berdasarkan no_pendaftaran
                     [
                         'nama_calon_penerima' => $row[1],
-                        'asal_sekolah' => $row[2],
+                        'NISN' => $row[2],
                         'jenis_beasiswa_id' => $jenisBeasiswa->id,
                     ]
                 );
