@@ -12,7 +12,7 @@ class CalonPenerima extends Model
     protected $fillable = [
         'no_pendaftaran',
         'nama_calon_penerima',
-        'asal_sekolah',
+        'NISN',
         'jenis_beasiswa_id',
     ];
 
