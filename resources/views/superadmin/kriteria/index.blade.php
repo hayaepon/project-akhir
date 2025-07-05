@@ -179,4 +179,47 @@
         setActiveButton('kip-k');
     });
 </script>
+<script>
+    // NOTIFIKASI FLASH MESSAGE
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    @elseif(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            showConfirmButton: false,
+            timer: 3000
+        });
+    @endif
+
+    // KONFIRMASI HAPUS
+    document.querySelectorAll('form[action*="kriteria"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Hentikan submit bawaan
+
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit form jika dikonfirmasi
+                }
+            });
+        });
+    });
+</script>
+
 @endsection
