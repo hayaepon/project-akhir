@@ -96,8 +96,10 @@
                         <td class="border px-4 py-2">{{ $data->jenisBeasiswa->nama ?? '-' }}</td>
                         <td class="border px-4 py-2 text-center">
                             <div class="flex justify-center space-x-3">
-                                <a href="{{ route('calon-penerima.edit', $data->id) }}" class="fas fa-edit text-yellow-300">
-                                </a>
+                                <a href="{{ route('calon-penerima.edit', $data->id) }}" class="text-yellow-500 hover:text-yellow-700">
+                                    <i class="fas fa-edit"></i>    
+                                 </a>
+                                 <span class="text-gray-400">|</span>
                                 <form id="delete-form-{{ $data->id }}" action="{{ route('calon-penerima.destroy', $data->id) }}" method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
