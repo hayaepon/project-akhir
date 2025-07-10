@@ -20,7 +20,7 @@
 
     <!-- FORM INPUT PERHITUNGAN -->
     <div class="bg-white p-6 rounded shadow mb-6">
-        <h3 class="text-2xl font-semibold mb-2">Pertanyaan Wawancara</h3>
+        <h3 class="text-2xl font-semibold mb-2">Input Nilai</h3>
         <hr class="border-t-2 border-gray-300 mb-4">
 
         <form action="{{ route('admin.perhitungan_smart.store') }}" method="POST" class="space-y-6">
