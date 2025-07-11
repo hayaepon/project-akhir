@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-
+             <hr class="border-t-2 border-gray-300 mb-2 w-full">
             <!-- Tabel Hasil Seleksi -->
             @if ($hasilSeleksiKIP->isEmpty() && $hasilSeleksiTahfidz->isEmpty())
                 <p class="text-gray-600">Belum ada data hasil seleksi untuk beasiswa ini.</p>
@@ -52,7 +52,7 @@
                 <!-- Tabel KIP-K -->
                 @if(request()->get('beasiswa') == 'KIP-K' || request()->get('beasiswa') == '')
                     <div class="overflow-x-auto mt-4">
-                        <h2 class="text-lg font-bold mb-2">Hasil Seleksi Beasiswa KIP-K</h2>
+                        <h2 class="text-lg font-bold mb-2">KIP-K</h2>
                         <table class="min-w-full table-auto border-collapse">
                             <thead>
                                 <tr class="bg-blue-800 text-white">
@@ -88,7 +88,7 @@
                 <!-- Tabel Tahfidz -->
                 @if(request()->get('beasiswa') == 'Tahfidz' || request()->get('beasiswa') == '')
                     <div class="overflow-x-auto mt-4">
-                        <h2 class="text-lg font-bold mb-2">Hasil Seleksi Beasiswa Tahfidz</h2>
+                        <h2 class="text-lg font-bold mb-2">Tahfidz</h2>
                         <table class="min-w-full table-auto border-collapse">
                             <thead>
                                 <tr class="bg-blue-800 text-white">

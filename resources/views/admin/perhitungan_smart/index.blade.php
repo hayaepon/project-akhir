@@ -72,7 +72,7 @@
     <!-- TABEL PERHITUNGAN -->
     <div class="bg-white p-6 rounded shadow">
         <div class="flex items-center justify-between mb-2">
-            <h3 class="text-xl font-semibold">Tabel Perhitungan SMART</h3>
+            <h3 class="text-2xl font-semibold mb-2">Tabel Perhitungan SMART</h3>
             <div class="relative">
                 <button id="filterButton" class="flex items-center bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-700">
                     <i class="fas fa-filter mr-2"></i> Filters
@@ -91,48 +91,119 @@
         </div>
         <hr class="border-t-2 border-gray-300 mb-4">
 
-        <div class="overflow-x-auto max-h-[480px]">
-            <table class="w-full table-auto border">
-                <thead class="bg-blue-800 text-white">
-                    <tr>
-                        <th class="border px-4 py-2">No</th>
-                        <th class="border px-4 py-2">Nama Calon</th>
-                        <th class="border px-4 py-2">Beasiswa</th>
-                        @foreach ($headerKriteria as $id => $namaKriteria)
-                        <th class="border px-4 py-2">{{ $namaKriteria }}</th>
+        {{-- MODE GROUPED: TABEL TERPISAH PER JENIS --}}
+        @if(isset($grouped) && $grouped && isset($dataPerJenis))
+            @foreach($dataPerJenis as $data)
+                <div class="mb-2">
+                    <h3 class="text-lg font-bold mb-2">{{ $data['jenis']->nama }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto border">
+                            <thead class="bg-blue-800 text-white">
+                                <tr>
+                                    <th class="border px-4 py-2 font-normal">No</th>
+                                    <th class="border px-4 py-2 font-normal">Nama Calon</th>
+                                    @foreach ($data['headerKriteria'] as $id => $namaKriteria)
+                                    <th class="border px-4 py-2 font-normal">{{ $namaKriteria }}</th>
+                                    @endforeach
+                                    <th class="border px-4 py-2 font-normal">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($data['hasilPerhitungan'] as $i => $item)
+                                <tr class="even:bg-gray-50 hover:bg-gray-100">
+                                    <td class="border px-4 py-2">{{ $i + 1 }}</td>
+                                    <td class="border px-4 py-2">{{ $item->calonPenerima->nama_calon_penerima }}</td>
+                                    @foreach ($data['headerKriteria'] as $idKriteria => $namaKriteria)
+                                    <td class="border px-4 py-2 text-center">{{ $item->nilai_kriteria[$idKriteria] ?? '-' }}</td>
+                                    @endforeach
+                                    <td class="border px-4 py-2 text-center">
+                                        <div class="flex justify-center items-center space-x-3">
+                                            <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}" class="text-yellow-500 hover:text-yellow-700">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <span class="text-gray-400">|</span>
+                                            <button type="button" onclick="confirmDelete({{ $item->id }})" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <form id="delete-form-{{ $item->id }}" action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST" class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @if(count($data['hasilPerhitungan']) == 0)
+                                <tr>
+                                    <td colspan="{{ 2 + count($data['headerKriteria']) }}" class="text-center py-4">Belum ada data perhitungan.</td>
+                                </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endforeach
+
+        {{-- MODE TUNGGAL: SATU TABEL --}}
+        @else
+            @php
+                $judulBeasiswa = null;
+                if(request()->get('jenis_beasiswa') && isset($jenisBeasiswas)) {
+                    $beasiswa = $jenisBeasiswas->firstWhere('id', request()->get('jenis_beasiswa'));
+                    $judulBeasiswa = $beasiswa ? $beasiswa->nama : null;
+                }
+            @endphp
+            @if($judulBeasiswa)
+                <h3 class="text-lg font-bold mb-2">{{ $judulBeasiswa }}</h3>
+            @endif
+            <div class="overflow-x-auto max-h-[480px]">
+                <table class="w-full table-auto border">
+                    <thead class="bg-blue-800 text-white">
+                        <tr>
+                            <th class="border px-4 py-2 font-normal">No</th>
+                            <th class="border px-4 py-2 font-normal">Nama Calon</th>
+                            <th class="border px-4 py-2 font-normal">Beasiswa</th>
+                            @foreach ($headerKriteria as $id => $namaKriteria)
+                            <th class="border px-4 py-2 font-normal">{{ $namaKriteria }}</th>
+                            @endforeach
+                            <th class="border px-4 py-2 font-normal">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($hitunganSmarts as $i => $item)
+                        <tr class="even:bg-gray-50 hover:bg-gray-100">
+                            <td class="border px-4 py-2">{{ $i + 1 }}</td>
+                            <td class="border px-4 py-2">{{ $item->calonPenerima->nama_calon_penerima }}</td>
+                            <td class="border px-4 py-2">{{ $item->jenisBeasiswa->nama }}</td>
+                            @foreach ($headerKriteria as $idKriteria => $namaKriteria)
+                            <td class="border px-4 py-2 text-center">{{ $item->nilai_kriteria[$idKriteria] ?? '-' }}</td>
+                            @endforeach
+                            <td class="border px-4 py-2 text-center">
+                                <div class="flex justify-center items-center space-x-3">
+                                    <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}" class="text-yellow-500 hover:text-yellow-700">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <span class="text-gray-400">|</span>
+                                    <button type="button" onclick="confirmDelete({{ $item->id }})" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <form id="delete-form-{{ $item->id }}" action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST" class="hidden">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                         @endforeach
-                        <th class="border px-4 py-2">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($hitunganSmarts as $i => $item)
-                    <tr class="even:bg-gray-50 hover:bg-gray-100">
-                        <td class="border px-4 py-2">{{ $i + 1 }}</td>
-                        <td class="border px-4 py-2">{{ $item->calonPenerima->nama_calon_penerima }}</td>
-                        <td class="border px-4 py-2">{{ $item->jenisBeasiswa->nama }}</td>
-                        @foreach ($headerKriteria as $idKriteria => $namaKriteria)
-                        <td class="border px-4 py-2 text-center">{{ $item->nilai_kriteria[$idKriteria] ?? '-' }}</td>
-                        @endforeach
-                        <td class="border px-4 py-2 text-center">
-                            <div class="flex justify-center items-center space-x-3">
-                                <a href="{{ route('admin.perhitungan_smart.edit', $item->id) }}" class="text-yellow-500 hover:text-yellow-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <span class="text-gray-400">|</span>
-                                <button type="button" onclick="confirmDelete({{ $item->id }})" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <form id="delete-form-{{ $item->id }}" action="{{ route('admin.perhitungan_smart.destroy', $item->id) }}" method="POST" class="hidden">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                        @if(count($hitunganSmarts) == 0)
+                        <tr>
+                            <td colspan="{{ 3 + count($headerKriteria) }}" class="text-center py-4">Belum ada data perhitungan.</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 </div>
 

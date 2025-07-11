@@ -13,62 +13,74 @@ class SmartCalculationController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil semua calon penerima
         $calonPenerimas = CalonPenerima::all();
-        
-        // Ambil jenis beasiswa dengan kriteria dan subkriteria
         $jenisBeasiswas = JenisBeasiswa::with('kriterias.subkriterias')->get();
-        
-        // Ambil semua HitunganSmart yang ada dan sudah diinput
-        $hitunganSmarts = HitunganSmart::all();
-        
-        // Ambil ID calon penerima yang sudah diinput
-        $sudahDiinput = $hitunganSmarts->pluck('calon_penerima_id')->toArray();
+        $allHitunganSmarts = HitunganSmart::all();
+        $sudahDiinput = $allHitunganSmarts->pluck('calon_penerima_id')->toArray();
 
-        // Filter berdasarkan jenis beasiswa jika ada
-        $hitunganSmartsQuery = HitunganSmart::with('calonPenerima', 'jenisBeasiswa');
-        
-        if ($request->has('jenis_beasiswa') && $request->get('jenis_beasiswa') != '') {
-            $hitunganSmartsQuery->where('jenis_beasiswa_id', $request->get('jenis_beasiswa'));
-        }
-        
-        $hitunganSmarts = $hitunganSmartsQuery->get();
-
-        // Decode nilai_kriteria untuk setiap hitungan
-        foreach ($hitunganSmarts as $item) {
-            $item->nilai_kriteria = is_string($item->nilai_kriteria) ? json_decode($item->nilai_kriteria, true) : $item->nilai_kriteria;
-        }
-
-        // Mendapatkan kriteria untuk header
-        $headerKriteria = [];
         $selectedBeasiswaId = $request->get('jenis_beasiswa');
-        
+        $grouped = false;
+        $dataPerJenis = [];
+        $headerKriteria = [];
+        $hitunganSmarts = collect();
+
         if ($selectedBeasiswaId) {
-            // Mendapatkan hanya kriteria untuk jenis beasiswa yang dipilih
-            $selectedBeasiswa = JenisBeasiswa::with('kriterias')->find($selectedBeasiswaId);
-            if ($selectedBeasiswa) {
-                foreach ($selectedBeasiswa->kriterias as $kriteria) {
+            // Filter hanya satu jenis beasiswa
+            $jenis = $jenisBeasiswas->firstWhere('id', $selectedBeasiswaId);
+            if ($jenis) {
+                $hitunganSmarts = HitunganSmart::with('calonPenerima', 'jenisBeasiswa')
+                    ->where('jenis_beasiswa_id', $jenis->id)
+                    ->get();
+
+                foreach ($hitunganSmarts as $item) {
+                    $item->nilai_kriteria = is_string($item->nilai_kriteria) ? json_decode($item->nilai_kriteria, true) : $item->nilai_kriteria;
+                }
+
+                foreach ($jenis->kriterias as $kriteria) {
                     $headerKriteria[$kriteria->id] = $kriteria->kriteria;
                 }
             }
+            // Kirim variabel untuk mode satu tabel
+            return view('admin.perhitungan_smart.index', compact(
+                'calonPenerimas',
+                'jenisBeasiswas',
+                'hitunganSmarts',
+                'headerKriteria',
+                'sudahDiinput',
+                'grouped'
+            ));
         } else {
-            // Mengambil semua kriteria dari seluruh jenis beasiswa
+            // Semua beasiswa: grouped mode
+            $grouped = true;
             foreach ($jenisBeasiswas as $jenis) {
-                foreach ($jenis->kriterias as $kriteria) {
-                    if (!in_array($kriteria->kriteria, $headerKriteria)) {
-                        $headerKriteria[$kriteria->id] = $kriteria->kriteria;
-                    }
-                }
-            }
-        }
+                $hitunganSmarts = HitunganSmart::with('calonPenerima', 'jenisBeasiswa')
+                    ->where('jenis_beasiswa_id', $jenis->id)
+                    ->get();
 
-        return view('admin.perhitungan_smart.index', compact(
-            'calonPenerimas',
-            'jenisBeasiswas',
-            'hitunganSmarts',
-            'headerKriteria',
-            'sudahDiinput' // Pass the list of IDs of already entered candidates
-        ));
+                foreach ($hitunganSmarts as $item) {
+                    $item->nilai_kriteria = is_string($item->nilai_kriteria) ? json_decode($item->nilai_kriteria, true) : $item->nilai_kriteria;
+                }
+
+                $headerKriteriaJenis = [];
+                foreach ($jenis->kriterias as $kriteria) {
+                    $headerKriteriaJenis[$kriteria->id] = $kriteria->kriteria;
+                }
+
+                $dataPerJenis[] = [
+                    'jenis' => $jenis,
+                    'hasilPerhitungan' => $hitunganSmarts,
+                    'headerKriteria' => $headerKriteriaJenis,
+                ];
+            }
+            // Kirim variabel untuk mode grouped
+            return view('admin.perhitungan_smart.index', compact(
+                'calonPenerimas',
+                'jenisBeasiswas',
+                'dataPerJenis',
+                'grouped',
+                'sudahDiinput'
+            ));
+        }
     }
 
     public function getKriteriaByBeasiswa($jenisBeasiswaId)
@@ -82,7 +94,6 @@ class SmartCalculationController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'calon_penerima_id' => 'required|exists:calon_penerimas,id',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
@@ -90,24 +101,20 @@ class SmartCalculationController extends Controller
             'nilai_kriteria.*' => 'required|string',
         ]);
 
-        // Mengecek apakah data sudah ada untuk calon penerima dan jenis beasiswa yang sama
         $exists = HitunganSmart::where('calon_penerima_id', $validated['calon_penerima_id'])
             ->where('jenis_beasiswa_id', $validated['jenis_beasiswa_id'])
             ->exists();
 
         if ($exists) {
-            // Mengembalikan error jika data sudah ada
             return redirect()->back()->with('error', 'Data untuk calon penerima dan jenis beasiswa ini sudah ada.');
         }
 
-        // Menyimpan data baru
         HitunganSmart::create([
             'calon_penerima_id' => $validated['calon_penerima_id'],
             'jenis_beasiswa_id' => $validated['jenis_beasiswa_id'],
             'nilai_kriteria' => json_encode($validated['nilai_kriteria']),
         ]);
 
-        // Redirect dengan pesan sukses
         return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data berhasil disimpan.');
     }
 
@@ -117,7 +124,6 @@ class SmartCalculationController extends Controller
         $calonPenerimas = CalonPenerima::all();
         $jenisBeasiswas = JenisBeasiswa::with('kriterias.subkriterias')->get();
 
-        // Decode nilai_kriteria agar bisa digunakan di view
         $nilaiKriteria = is_string($HitunganSmart->nilai_kriteria) ? json_decode($HitunganSmart->nilai_kriteria, true) : $HitunganSmart->nilai_kriteria;
 
         return view('admin.perhitungan_smart.edit', compact('HitunganSmart', 'calonPenerimas', 'jenisBeasiswas', 'nilaiKriteria'));
@@ -125,7 +131,6 @@ class SmartCalculationController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi input
         $validated = $request->validate([
             'calon_penerima_id' => 'required|exists:calon_penerimas,id',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
@@ -135,14 +140,12 @@ class SmartCalculationController extends Controller
 
         $HitunganSmart = HitunganSmart::findOrFail($id);
 
-        // Update data perhitungan SMART
         $HitunganSmart->update([
             'calon_penerima_id' => $validated['calon_penerima_id'],
             'jenis_beasiswa_id' => $validated['jenis_beasiswa_id'],
             'nilai_kriteria' => json_encode($validated['nilai_kriteria']),
         ]);
 
-        // Redirect dengan pesan sukses
         return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data perhitungan SMART berhasil diperbarui.');
     }
 
@@ -151,7 +154,6 @@ class SmartCalculationController extends Controller
         $hitungan = HitunganSmart::findOrFail($id);
         $hitungan->delete();
 
-        // Redirect dengan pesan sukses
         return redirect()->route('admin.perhitungan_smart.index')->with('success', 'Data perhitungan berhasil dihapus.');
     }
 }

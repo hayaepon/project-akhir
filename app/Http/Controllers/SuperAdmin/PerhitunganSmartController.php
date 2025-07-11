@@ -15,28 +15,63 @@ class PerhitunganSmartController extends Controller
     public function index(Request $request)
     {
         $jenisBeasiswaId = $request->query('jenis_beasiswa');
-
-        // Ambil hasil perhitungan berdasarkan jenis beasiswa yang difilter
-        $hasilPerhitungan = HitunganSmart::with(['calonPenerima', 'jenisBeasiswa'])
-            ->when($jenisBeasiswaId, function ($query) use ($jenisBeasiswaId) {
-                $query->where('jenis_beasiswa_id', $jenisBeasiswaId);
-            })
-            ->get();
-
-        // Decode nilai kriteria (json)
-        foreach ($hasilPerhitungan as $item) {
-            $item->nilai_kriteria = is_string($item->nilai_kriteria)
-                ? json_decode($item->nilai_kriteria, true)
-                : $item->nilai_kriteria;
-        }
-
-        // Ambil jenis beasiswa untuk filter
         $jenisBeasiswas = JenisBeasiswa::with('kriterias')->get();
 
-        // Ambil header kriteria berdasarkan jenis beasiswa yang difilter
-        $headerKriteria = $this->getHeaderKriteria($jenisBeasiswaId, $jenisBeasiswas);
+        // Jika filter per jenis beasiswa
+        if ($jenisBeasiswaId) {
+            $hasilPerhitungan = HitunganSmart::with(['calonPenerima', 'jenisBeasiswa'])
+                ->where('jenis_beasiswa_id', $jenisBeasiswaId)
+                ->get();
 
-        return view('superadmin.perhitungan-smart.index', compact('hasilPerhitungan', 'headerKriteria', 'jenisBeasiswas', 'jenisBeasiswaId'));
+            foreach ($hasilPerhitungan as $item) {
+                $item->nilai_kriteria = is_string($item->nilai_kriteria)
+                    ? json_decode($item->nilai_kriteria, true)
+                    : $item->nilai_kriteria;
+            }
+
+            $headerKriteria = $this->getHeaderKriteria($jenisBeasiswaId, $jenisBeasiswas);
+
+            return view('superadmin.perhitungan-smart.index', [
+                'hasilPerhitungan' => $hasilPerhitungan,
+                'headerKriteria' => $headerKriteria,
+                'jenisBeasiswas' => $jenisBeasiswas,
+                'jenisBeasiswaId' => $jenisBeasiswaId,
+                'grouped' => false,
+            ]);
+        }
+        // Jika filter "Semua Beasiswa"
+        else {
+            $dataPerJenis = [];
+            foreach ($jenisBeasiswas as $jenis) {
+                $hasil = HitunganSmart::with(['calonPenerima', 'jenisBeasiswa'])
+                    ->where('jenis_beasiswa_id', $jenis->id)
+                    ->get();
+
+                foreach ($hasil as $item) {
+                    $item->nilai_kriteria = is_string($item->nilai_kriteria)
+                        ? json_decode($item->nilai_kriteria, true)
+                        : $item->nilai_kriteria;
+                }
+
+                $headerKriteria = [];
+                foreach ($jenis->kriterias as $kriteria) {
+                    $headerKriteria[$kriteria->id] = $kriteria->kriteria;
+                }
+
+                $dataPerJenis[] = [
+                    'jenis' => $jenis,
+                    'hasilPerhitungan' => $hasil,
+                    'headerKriteria' => $headerKriteria,
+                ];
+            }
+
+            return view('superadmin.perhitungan-smart.index', [
+                'dataPerJenis' => $dataPerJenis,
+                'jenisBeasiswas' => $jenisBeasiswas,
+                'jenisBeasiswaId' => null,
+                'grouped' => true,
+            ]);
+        }
     }
 
     // Fungsi untuk mendapatkan header kriteria berdasarkan jenis beasiswa
@@ -101,13 +136,12 @@ class PerhitunganSmartController extends Controller
     {
         $jenisBeasiswas = JenisBeasiswa::with('kriterias')->get();
 
-        // Loop through each jenis beasiswa
         foreach ($jenisBeasiswas as $jenisBeasiswa) {
             $kriterias = $jenisBeasiswa->kriterias;
             if ($kriterias->isEmpty()) continue;
 
             $calonPenerimas = CalonPenerima::where('jenis_beasiswa_id', $jenisBeasiswa->id)
-                ->with(['subkriterias']) // Eager load subkriteria
+                ->with(['subkriterias'])
                 ->get();
 
             if ($calonPenerimas->isEmpty()) continue;
@@ -120,7 +154,6 @@ class PerhitunganSmartController extends Controller
                 }
             }
 
-            // Calculate max and min for normalization
             $maxMin = [];
             foreach ($kriterias as $kriteria) {
                 $values = array_column($matriks, $kriteria->id);
@@ -130,30 +163,25 @@ class PerhitunganSmartController extends Controller
                 ];
             }
 
-            // Calculate normalized scores and final score
             foreach ($matriks as $calonId => $subKriterias) {
                 $skor = 0;
                 $nilaiNormal = [];
 
                 foreach ($subKriterias as $kriteriaId => $nilai) {
-                    // Get kriteria object to fetch weight and attribute (benefit/cost)
                     $kriteria = $kriterias->firstWhere('id', $kriteriaId);
                     $bobot = $kriteria->bobot ?: 0;
 
                     $normal = 0;
                     if ($kriteria->atribut === 'benefit') {
-                        // Normalize benefit: value / max value of the criteria
                         $normal = $maxMin[$kriteriaId]['max'] ? $nilai / $maxMin[$kriteriaId]['max'] : 0;
                     } elseif ($kriteria->atribut === 'cost') {
-                        // Normalize cost: min value / value
                         $normal = $nilai ? $maxMin[$kriteriaId]['min'] / $nilai : 0;
                     }
 
                     $nilaiNormal[$kriteriaId] = round($normal, 4);
-                    $skor += $normal * $bobot; // Final score: weight * normalized value
+                    $skor += $normal * $bobot;
                 }
 
-                // Save the final results
                 HitunganSmart::updateOrCreate(
                     [
                         'calon_penerima_id' => $calonId,

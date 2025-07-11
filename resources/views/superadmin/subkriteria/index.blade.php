@@ -78,11 +78,11 @@
         <table class="min-w-full mt-6 table-auto">
             <thead>
                 <tr class="bg-blue-800 text-white">
-                    <th class="border px-6 py-2">Beasiswa</th>
-                    <th class="border px-6 py-2">Kriteria</th>
-                    <th class="border px-6 py-2">Sub Kriteria</th>
-                    <th class="border px-6 py-2">Nilai</th>
-                    <th class="border px-6 py-2">Aksi</th>
+                    <th class="border px-6 py-2 font-normal">Beasiswa</th>
+                    <th class="border px-6 py-2 font-normal">Kriteria</th>
+                    <th class="border px-6 py-2 font-normal">Sub Kriteria</th>
+                    <th class="border px-6 py-2 font-normal">Nilai</th>
+                    <th class="border px-6 py-2 font-normal">Aksi</th>
                 </tr>
             </thead>
             <tbody>

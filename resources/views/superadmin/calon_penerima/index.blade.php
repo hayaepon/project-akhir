@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-6 h-screen">
 
     <!-- Form Import Excel -->
-    <div class="bg-white p-6 rounded-lg mb-6">
+    <div class="bg-white p-6 rounded-lg mb-4">
         <h2 class="text-xl font-medium mb-2">Import Data dari Spreadsheet</h2>
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
         <form action="{{ route('calon-penerima.import') }}" method="POST" enctype="multipart/form-data">
@@ -83,12 +83,12 @@
         <table class="min-w-full table-auto">
             <thead>
                 <tr class="bg-blue-800 text-white">
-                    <th class="border px-4 py-2">No</th>
-                    <th class="border px-4 py-2">No Pendaftaran</th>
-                    <th class="border px-4 py-2">Nama Calon Penerima</th>
-                    <th class="border px-4 py-2">NPSN</th>
-                    <th class="border px-4 py-2">Beasiswa</th>
-                    <th class="border px-4 py-2">Aksi</th>
+                    <th class="border px-4 py-2  font-normal">No</th>
+                    <th class="border px-4 py-2  font-normal">No Pendaftaran</th>
+                    <th class="border px-4 py-2  font-normal">Nama Calon Penerima</th>
+                    <th class="border px-4 py-2  font-normal">NPSN</th>
+                    <th class="border px-4 py-2  font-normal">Beasiswa</th>
+                    <th class="border px-4 py-2  font-normal">Aksi</th>
                 </tr>
             </thead>
             <tbody id="table-body">
