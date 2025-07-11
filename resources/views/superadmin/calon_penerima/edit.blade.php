@@ -51,9 +51,9 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="flex flex-col">
-                        <label for="NISN" class="text-sm font-medium text-black-700 text-[16px] mb-2">NISN</label>
-                        <input type="text" id="NISN" name="NISN" class="w-full p-3 border rounded-lg shadow-sm"
-                            value="{{ old('NISN', $data->NISN) }}" required />
+                        <label for="NPSN" class="text-sm font-medium text-black-700 text-[16px] mb-2">NPSN</label>
+                        <input type="text" id="NPSN" name="NPSN" class="w-full p-3 border rounded-lg shadow-sm"
+                            value="{{ old('NPSN', $data->NPSN) }}" required />
                     </div>
 
                     <div class="flex flex-col">
