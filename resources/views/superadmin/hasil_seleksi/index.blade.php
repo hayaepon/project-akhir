@@ -46,17 +46,19 @@
             </div>
 
             <!-- Tabel Hasil Seleksi -->
-            @if ($hasilSeleksi->isEmpty())
+            @if ($hasilSeleksiKIP->isEmpty() && $hasilSeleksiTahfidz->isEmpty())
                 <p class="text-gray-600">Belum ada data hasil seleksi untuk beasiswa ini.</p>
             @else
-                <div class="overflow-x-auto mt-4">
-                    <div class="flex flex-col max-h-[400px] overflow-y-auto">
+                <!-- Tabel KIP-K -->
+                @if(request()->get('beasiswa') == 'KIP-K' || request()->get('beasiswa') == '')
+                    <div class="overflow-x-auto mt-4">
+                        <h2 class="text-lg font-bold mb-2">Hasil Seleksi Beasiswa KIP-K</h2>
                         <table class="min-w-full table-auto border-collapse">
                             <thead>
                                 <tr class="bg-blue-800 text-white">
                                     <th class="border px-4 py-2 text-left font-normal">No</th>
                                     <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
-                                    @foreach($headerKriteria as $namaKriteria)
+                                    @foreach($headerKriteriaKIP as $namaKriteria)
                                         <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
                                     @endforeach
                                     <th class="border px-4 py-2 text-left font-normal">Hasil</th>
@@ -64,17 +66,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($hasilSeleksi as $data)
+                                @foreach($hasilSeleksiKIP as $data)
                                     @php
                                         $nilaiKriteria = json_decode($data->nilai_kriteria, true);
                                     @endphp
                                     <tr class="bg-white">
                                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                                         <td class="border px-4 py-2">{{ $data->calonPenerima->nama_calon_penerima ?? '-' }}</td>
-                                        @foreach($headerKriteria as $id => $namaKriteria)
-                                            <td class="border px-4 py-2">
-                                                {{ $nilaiKriteria[$id] ?? 0 }}
-                                            </td>
+                                        @foreach($headerKriteriaKIP as $id => $namaKriteria)
+                                            <td class="border px-4 py-2">{{ $nilaiKriteria[$id] ?? 0 }}</td>
                                         @endforeach
                                         <td class="border px-4 py-2">{{ $data->hasil }}</td>
                                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
@@ -83,8 +83,44 @@
                             </tbody>
                         </table>
                     </div>
+                @endif
+
+                <!-- Tabel Tahfidz -->
+                @if(request()->get('beasiswa') == 'Tahfidz' || request()->get('beasiswa') == '')
+                    <div class="overflow-x-auto mt-4">
+                        <h2 class="text-lg font-bold mb-2">Hasil Seleksi Beasiswa Tahfidz</h2>
+                        <table class="min-w-full table-auto border-collapse">
+                            <thead>
+                                <tr class="bg-blue-800 text-white">
+                                    <th class="border px-4 py-2 text-left font-normal">No</th>
+                                    <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
+                                    @foreach($headerKriteriaTahfidz as $namaKriteria)
+                                        <th class="border px-4 py-2 text-left font-normal">{{ $namaKriteria }}</th>
+                                    @endforeach
+                                    <th class="border px-4 py-2 text-left font-normal">Hasil</th>
+                                    <th class="border px-4 py-2 text-left font-normal">Ranking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($hasilSeleksiTahfidz as $data)
+                                    @php
+                                        $nilaiKriteria = json_decode($data->nilai_kriteria, true);
+                                    @endphp
+                                    <tr class="bg-white">
+                                        <td class="border px-4 py-2">{{ $loop->iteration }}</td>
+                                        <td class="border px-4 py-2">{{ $data->calonPenerima->nama_calon_penerima ?? '-' }}</td>
+                                        @foreach($headerKriteriaTahfidz as $id => $namaKriteria)
+                                            <td class="border px-4 py-2">{{ $nilaiKriteria[$id] ?? 0 }}</td>
+                                        @endforeach
+                                        <td class="border px-4 py-2">{{ $data->hasil }}</td>
+                                        <td class="border px-4 py-2">{{ $loop->iteration }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             @endif
-            </div>
         </div>
     </div>
 
