@@ -70,10 +70,10 @@
                         </select>
                     </div>
                 </div>
-                <div>
-                    <button type="submit"
-                        class="bg-blue-800 text-white px-6 py-2 rounded-lg w-full sm:w-auto mt-6">Simpan</button>
-                </div>
+                <div class="flex space-x-4 justify-start mt-8">
+                <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
+                <a href="{{ route('calon-penerima.index') }}" class="bg-yellow-400 text-white py-2 px-8 rounded-lg shadow-md">Batal</a>
+            </div>
             </form>
         </div>
 

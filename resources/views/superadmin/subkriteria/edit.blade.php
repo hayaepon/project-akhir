@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6 h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div class="bg-white p-6 rounded-lg mb-6">
         <h2 class="font-medium text-2xl mb-8 text-[22px]">Edit Sub Kriteria</h2>
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
@@ -44,14 +44,14 @@
                     <input type="text" id="sub_kriteria" name="sub_kriteria" value="{{ $subKriteria->sub_kriteria }}" class="w-full p-3 border rounded-lg shadow-sm" required>
                 </div>
 
-                <div class="flex flex-col mb-4">
+                <div class="flex flex-col mb-2">
                     <label for="nilai" class="text-sm font-medium mb-2">Nilai</label>
                     <input type="number" id="nilai" name="nilai" value="{{ $subKriteria->nilai }}" class="w-full p-3 border rounded-lg shadow-sm" required>
                 </div>
             </div>
 
             <div class="flex space-x-4 justify-start">
-                <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md">Perbaharui</button>
+                <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded-lg shadow-md">Simpan</button>
                 <a href="{{ route('subkriteria.index') }}" class="bg-yellow-400 text-white py-2 px-8 rounded-lg shadow-md">Batal</a>
             </div>
         </form>
