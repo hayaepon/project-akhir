@@ -42,7 +42,7 @@
                 <th class="border px-4 py-2 text-left font-normal">No</th>
                 <th class="border px-4 py-2 text-left font-normal">No Pendaftaran</th>
                 <th class="border px-4 py-2 text-left font-normal">Nama Calon Penerima</th>
-                <th class="border px-4 py-2 text-left font-normal">NISN</th>
+                <th class="border px-4 py-2 text-left font-normal">NPSN</th>
                 <th class="border px-4 py-2 text-left font-normal">Beasiswa</th>
             </tr>
         </thead>
@@ -52,7 +52,7 @@
                     <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                     <td class="border px-4 py-2">{{ $item->no_pendaftaran }}</td>
                     <td class="border px-4 py-2">{{ $item->nama_calon_penerima }}</td>
-                    <td class="border px-4 py-2">{{ $item->NISN }}</td>
+                    <td class="border px-4 py-2">{{ $item->NPSN }}</td>
                     <td class="border px-4 py-2">{{ $item->jenisBeasiswa->nama ?? '-' }}</td>
                 </tr>
             @endforeach

@@ -15,7 +15,12 @@
                 <input type="file" name="file" accept=".xlsx,.xls" required class="p-2 border rounded w-full sm:w-auto">
                 <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Import Excel</button>
             </div>
-            <p class="text-sm mt-2 text-gray-600">* Format file: .xlsx / .xls. Kolom: no_pendaftaran, nama_calon_penerima, NISN, jenis_beasiswa_id</p>
+            <p class="text-sm mt-2 text-blue-600 hover:underline">
+    <a href="{{ asset('template/template_import_calon.xlsx') }}" download>
+        📥 Download Template Excel (format: .xlsx / .xls)
+    </a>
+</p>
+
         </form>
     </div>
 
@@ -38,8 +43,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex flex-col">
-                    <label for="NISN" class="text-sm font-medium text-[16px] mb-2">NISN</label>
-                    <input type="text" id="NISN" name="NISN" class="w-full p-3 border rounded-lg shadow-sm" required />
+                    <label for="NPSN" class="text-sm font-medium text-[16px] mb-2">NPSN</label>
+                    <input type="text" id="NPSN" name="NPSN" class="w-full p-3 border rounded-lg shadow-sm" required />
                 </div>
                 <div class="flex flex-col">
                     <label for="jenis_beasiswa_id" class="text-sm font-medium text-[16px] mb-2">Pilih Beasiswa</label>
@@ -81,7 +86,7 @@
                     <th class="border px-4 py-2">No</th>
                     <th class="border px-4 py-2">No Pendaftaran</th>
                     <th class="border px-4 py-2">Nama Calon Penerima</th>
-                    <th class="border px-4 py-2">NISN</th>
+                    <th class="border px-4 py-2">NPSN</th>
                     <th class="border px-4 py-2">Beasiswa</th>
                     <th class="border px-4 py-2">Aksi</th>
                 </tr>
@@ -92,12 +97,14 @@
                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                         <td class="border px-4 py-2">{{ $data->no_pendaftaran }}</td>
                         <td class="border px-4 py-2">{{ $data->nama_calon_penerima }}</td>
-                        <td class="border px-4 py-2">{{ $data->NISN }}</td>
+                        <td class="border px-4 py-2">{{ $data->NPSN }}</td>
                         <td class="border px-4 py-2">{{ $data->jenisBeasiswa->nama ?? '-' }}</td>
                         <td class="border px-4 py-2 text-center">
                             <div class="flex justify-center space-x-3">
-                                <a href="{{ route('calon-penerima.edit', $data->id) }}" class="fas fa-edit text-yellow-300">
-                                </a>
+                                <a href="{{ route('calon-penerima.edit', $data->id) }}" class="text-yellow-500 hover:text-yellow-700">
+                                    <i class="fas fa-edit"></i>    
+                                 </a>
+                                 <span class="text-gray-400">|</span>
                                 <form id="delete-form-{{ $data->id }}" action="{{ route('calon-penerima.destroy', $data->id) }}" method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
