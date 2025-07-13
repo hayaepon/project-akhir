@@ -3,6 +3,10 @@
 @section('title', 'Hasil Seleksi')
 
 @section('content')
+    @php
+        $highlightIds = session('highlight_id') ?? [];
+    @endphp
+
     <div class="container mx-auto px-4 py-6 h-screen">
         <div class="bg-white p-6 rounded-lg mb-2">
             <div class="flex justify-between items-center mb-4 space-x-4">
@@ -45,6 +49,7 @@
                 </div>
             </div>
              <hr class="border-t-2 border-gray-300 mb-2 w-full">
+
             <!-- Tabel Hasil Seleksi -->
             @if ($hasilSeleksiKIP->isEmpty() && $hasilSeleksiTahfidz->isEmpty())
                 <p class="text-gray-600">Belum ada data hasil seleksi untuk beasiswa ini.</p>
@@ -69,8 +74,9 @@
                                 @foreach($hasilSeleksiKIP as $data)
                                     @php
                                         $nilaiKriteria = json_decode($data->nilai_kriteria, true);
+                                        $highlight = in_array($data->calonPenerima->id, $highlightIds);
                                     @endphp
-                                    <tr class="bg-white">
+                                    <tr class="bg-white transition duration-500 @if($highlight) bg-yellow-200 animate-highlight @endif">
                                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                                         <td class="border px-4 py-2">{{ $data->calonPenerima->nama_calon_penerima ?? '-' }}</td>
                                         @foreach($headerKriteriaKIP as $id => $namaKriteria)
@@ -105,8 +111,9 @@
                                 @foreach($hasilSeleksiTahfidz as $data)
                                     @php
                                         $nilaiKriteria = json_decode($data->nilai_kriteria, true);
+                                        $highlight = in_array($data->calonPenerima->id, $highlightIds);
                                     @endphp
-                                    <tr class="bg-white">
+                                    <tr class="bg-white transition duration-500 @if($highlight) bg-yellow-200 animate-highlight @endif">
                                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                                         <td class="border px-4 py-2">{{ $data->calonPenerima->nama_calon_penerima ?? '-' }}</td>
                                         @foreach($headerKriteriaTahfidz as $id => $namaKriteria)
@@ -124,22 +131,27 @@
         </div>
     </div>
 
+    <style>
+        @keyframes fadeOut {
+            0% { background-color: #FEF9C3; }
+            100% { background-color: white; }
+        }
+
+        .animate-highlight {
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+    </style>
+
     <!-- Script Dropdown -->
     <script>
         document.getElementById('exportButton').addEventListener('click', function () {
-            // Ambil nilai beasiswa dari filter
             const selectedBeasiswa = document.getElementById('filterBeasiswa')?.value || '';
-            // Masukkan ke input hidden
             document.getElementById('exportBeasiswa').value = selectedBeasiswa;
-
-            // Tampilkan/hidden dropdown export
-            var dropdown = document.getElementById('exportDropdown');
-            dropdown.classList.toggle('hidden');
+            document.getElementById('exportDropdown').classList.toggle('hidden');
         });
 
         document.getElementById('filterButton').addEventListener('click', function () {
-            var dropdown = document.getElementById('filterDropdown');
-            dropdown.classList.toggle('hidden');
+            document.getElementById('filterDropdown').classList.toggle('hidden');
         });
 
         window.addEventListener('click', function (e) {

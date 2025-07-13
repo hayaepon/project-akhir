@@ -15,7 +15,6 @@ class HasilSeleksiController extends Controller
 {
     public function index(Request $request)
     {
-        $this->hitung();
 
         $beasiswaFilter = $request->get('beasiswa');
         $query = HasilSeleksi::with('calonPenerima');
