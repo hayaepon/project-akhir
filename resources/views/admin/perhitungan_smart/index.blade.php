@@ -4,6 +4,18 @@
 
 @section('content')
 
+<style>
+/* Hapus arrow dropdown pada select beasiswa yang disabled */
+#jenis_beasiswa_id[disabled] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: none;
+    background-image: none !important;
+    box-shadow: none;
+}
+</style>
+
 <div class="container mx-auto px-4 py-6 min-h-screen">
     @if(session('success') || session('error'))
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -46,14 +58,13 @@
 
                 <div id="beasiswa-container" style="display: none;">
                     <label for="jenis_beasiswa_id" class="block mb-2 font-medium">Beasiswa</label>
-                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded w-full" required>
+                    <select id="jenis_beasiswa_id" disabled required class="border p-3 rounded w-full">
                         <option value="">Pilih Beasiswa</option>
                         @foreach ($jenisBeasiswas as $beasiswa)
-                        <option value="{{ $beasiswa->id }}" {{ old('jenis_beasiswa_id') == $beasiswa->id ? 'selected' : '' }}>
-                            {{ $beasiswa->nama }}
-                        </option>
+                        <option value="{{ $beasiswa->id }}">{{ $beasiswa->nama }}</option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="jenis_beasiswa_id" id="jenis_beasiswa_id_hidden" value="">
                     @error('jenis_beasiswa_id')
                     <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
                     @enderror
@@ -207,7 +218,6 @@
     </div>
 </div>
 
-<!-- Script -->
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -215,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calonPenerimaSelect = document.getElementById('calon_penerima');
     const beasiswaContainer = document.getElementById('beasiswa-container');
     const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
+    const beasiswaHidden = document.getElementById('jenis_beasiswa_id_hidden');
     const kriteriaContainer = document.getElementById('kriteria-container');
     const filterButton = document.getElementById('filterButton');
     const filterDropdown = document.getElementById('filterDropdown');
@@ -290,20 +301,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     calonPenerimaSelect.addEventListener('change', () => {
-        const selected = calonPenerimaSelect.options[calonPenerimaSelect.selectedIndex];
+        const selected   = calonPenerimaSelect.options[calonPenerimaSelect.selectedIndex];
         const beasiswaId = selected?.getAttribute('data-beasiswa') || '';
         if (calonPenerimaSelect.value) {
             beasiswaContainer.style.display = 'block';
             beasiswaSelect.value = beasiswaId;
+            beasiswaSelect.disabled = true;
+            beasiswaHidden.value = beasiswaId;
             loadKriteria(beasiswaId);
         } else {
             beasiswaContainer.style.display = 'none';
+            beasiswaSelect.value = '';
+            beasiswaSelect.disabled = false;
+            beasiswaHidden.value = '';
             clearKriteria();
         }
     });
 
     @if(old('jenis_beasiswa_id'))
         beasiswaContainer.style.display = 'block';
+        beasiswaSelect.value = '{{ old('jenis_beasiswa_id') }}';
+        beasiswaSelect.disabled = true;
+        beasiswaHidden.value = '{{ old('jenis_beasiswa_id') }}';
         loadKriteria({{ old('jenis_beasiswa_id') }});
     @endif
 

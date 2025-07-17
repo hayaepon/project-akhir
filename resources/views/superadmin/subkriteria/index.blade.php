@@ -72,7 +72,6 @@
                 <button id="tahfidz-btn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-blue-800">Tahfidz</button>
             </div>
         </div>
-
         <hr class="border-t-2 border-gray-300 mb-4 w-full">
 
         <table class="min-w-full mt-6 table-auto">
@@ -86,47 +85,44 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($grouped as $kriteria_id => $items)
+            @foreach($grouped as $beasiswa_id => $kriterias)
+                @php
+                    $firstSub = $kriterias->first()->first();
+                    $beasiswa = $firstSub->kriteria->jenisBeasiswa;
+                    // Hitung semua subkriteria di seluruh kriteria beasiswa ini (rowspan)
+                    $totalRows = $kriterias->reduce(function($carry, $items) {
+                        return $carry + count($items);
+                    }, 0);
+                    $beasiswaRowStarted = false;
+                @endphp
+                @foreach($kriterias as $kriteria_id => $subKriterias)
                     @php
-                        $rowspan = count($items);
-                        $kriteria = $items->first()->kriteria;
-                        $beasiswa = $items->first()->kriteria->jenisBeasiswa;
+                        $kriteria = $subKriterias->first()->kriteria;
+                        $totalKriteriaRows = $subKriterias->count();
                     @endphp
-                    <tr class="border-b" data-beasiswa="{{ strtolower($beasiswa->nama ?? '') }}">
-                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $beasiswa->nama ?? '-' }}</td>
-                        <td class="border px-6 py-2" rowspan="{{ $rowspan }}">{{ $kriteria->kriteria }}</td>
-                        <td class="border px-6 py-2">{{ $items->first()->sub_kriteria }}</td>
-                        <td class="border px-6 py-2">{{ $items->first()->nilai }}</td>
-                        <td class="border px-6 py-2 text-center">
-                            <div class="flex justify-center items-center space-x-3">
-                                <a href="{{ route('subkriteria.edit', $items->first()->id) }}" class="text-yellow-500 hover:underline">
-                                    <i class="fas fa-edit text-yellow-300"></i>
-                                </a>
-                                <span class="text-gray-400">|</span>
-                                <button type="button" onclick="confirmDelete({{ $items->first()->id }})" class="text-red-500 hover:underline">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <form id="delete-form-{{ $items->first()->id }}" action="{{ route('subkriteria.destroy', $items->first()->id) }}" method="POST" class="hidden">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @foreach ($items->slice(1) as $item)
+                    @foreach($subKriterias as $subIndex => $subKriteria)
                         <tr class="border-b" data-beasiswa="{{ strtolower($beasiswa->nama ?? '') }}">
-                            <td class="border px-6 py-2">{{ $item->sub_kriteria }}</td>
-                            <td class="border px-6 py-2">{{ $item->nilai }}</td>
+                            {{-- Kolom Beasiswa: cuma di baris pertama --}}
+                            @if (!$beasiswaRowStarted)
+                                <td class="border px-6 py-2" rowspan="{{ $totalRows }}">{{ $beasiswa->nama ?? '-' }}</td>
+                                @php $beasiswaRowStarted = true; @endphp
+                            @endif
+                            {{-- Kolom Kriteria: cuma di baris pertama kriteria --}}
+                            @if ($subIndex == 0)
+                                <td class="border px-6 py-2" rowspan="{{ $totalKriteriaRows }}">{{ $kriteria->kriteria }}</td>
+                            @endif
+                            <td class="border px-6 py-2">{{ $subKriteria->sub_kriteria }}</td>
+                            <td class="border px-6 py-2">{{ $subKriteria->nilai }}</td>
                             <td class="border px-6 py-2 text-center">
                                 <div class="flex justify-center items-center space-x-3">
-                                    <a href="{{ route('subkriteria.edit', $item->id) }}" class="text-yellow-500 hover:underline">
+                                    <a href="{{ route('subkriteria.edit', $subKriteria->id) }}" class="text-yellow-500 hover:underline">
                                         <i class="fas fa-edit text-yellow-300"></i>
                                     </a>
                                     <span class="text-gray-400">|</span>
-                                    <button type="button" onclick="confirmDelete({{ $item->id }})" class="text-red-500 hover:underline">
+                                    <button type="button" onclick="confirmDelete({{ $subKriteria->id }})" class="text-red-500 hover:underline">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                    <form id="delete-form-{{ $item->id }}" action="{{ route('subkriteria.destroy', $item->id) }}" method="POST" class="hidden">
+                                    <form id="delete-form-{{ $subKriteria->id }}" action="{{ route('subkriteria.destroy', $subKriteria->id) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -135,6 +131,7 @@
                         </tr>
                     @endforeach
                 @endforeach
+            @endforeach
             </tbody>
         </table>
     </div>
@@ -145,7 +142,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Delete Confirmation
+    // Delete Confirmation (tidak berubah)
     function confirmDelete(id) {
         Swal.fire({
             title: 'Yakin ingin menghapus?',
@@ -202,6 +199,7 @@
             if (beasiswa === 'tahfidz') $('#tahfidz-btn').removeClass('bg-gray-400').addClass('bg-blue-800');
         }
 
+        // Tombol filter
         $('#kipk-btn').click(function() {
             filterTable('kip-k');
             setActiveButton('kip-k');
@@ -212,9 +210,24 @@
             setActiveButton('tahfidz');
         });
 
-        // Default filter
-        filterTable('kip-k');
-        setActiveButton('kip-k');
+        // Ambil dari parameter URL untuk filter aktif
+        @php
+            $activeBeasiswa = request('active') ?? 'kip-k'; // default kip-k
+        @endphp
+
+        // Default: jika ada param active, otomatis activate tombol dan filter
+        filterTable('{{ $activeBeasiswa }}');
+        setActiveButton('{{ $activeBeasiswa }}');
+
+        // Jika kamu ingin tetap pakai trigger button:
+        
+        @if(request('active'))
+            setTimeout(function() {
+                $('#{{ request('active') }}-btn').trigger('click');
+            }, 100);
+        @endif
+        
     });
 </script>
 @endpush
+

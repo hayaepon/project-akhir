@@ -3,6 +3,16 @@
 @section('title', 'Edit Perhitungan SMART')
 
 @section('content')
+<style>
+#calon_penerima[disabled], #jenis_beasiswa_id[disabled] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: none;
+    background-image: none !important;
+    box-shadow: none;
+}
+</style>
 <div class="container mx-auto px-4 py-6 min-h-screen">
     <div class="bg-white p-6 rounded shadow">
         <h3 class="text-2xl font-semibold mb-4">Edit Input Nilai</h3>
@@ -27,7 +37,9 @@
                 <!-- Nama Calon Penerima -->
                 <div class="flex flex-col">
                     <label for="calon_penerima" class="mb-2 font-medium">Nama Calon Penerima</label>
-                    <select id="calon_penerima" name="calon_penerima_id" class="border p-3 rounded shadow" required>
+                    <select id="calon_penerima" name="calon_penerima_id"
+                        class="border p-3 rounded shadow"
+                        required disabled>
                         <option value="">Pilih Calon Penerima</option>
                         @foreach ($calonPenerimas as $calon)
                         <option value="{{ $calon->id }}" {{ $HitunganSmart->calon_penerima_id == $calon->id ? 'selected' : '' }}>
@@ -35,6 +47,7 @@
                         </option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="calon_penerima_id" value="{{ $HitunganSmart->calon_penerima_id }}">
                     @error('calon_penerima_id')
                     <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
                     @enderror
@@ -43,7 +56,10 @@
                 <!-- Pilih Jenis Beasiswa -->
                 <div class="flex flex-col">
                     <label for="jenis_beasiswa_id" class="mb-2 font-medium">Beasiswa</label>
-                    <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="border p-3 rounded shadow" required>
+                    <select id="jenis_beasiswa_id"
+                            disabled required
+                            class="border p-3 rounded shadow"
+                            style="appearance:none;-webkit-appearance:none;-moz-appearance:none;background:none;">
                         <option value="">Pilih Beasiswa</option>
                         @foreach ($jenisBeasiswas as $beasiswa)
                         <option value="{{ $beasiswa->id }}" {{ $HitunganSmart->jenis_beasiswa_id == $beasiswa->id ? 'selected' : '' }}>
@@ -51,6 +67,7 @@
                         </option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="jenis_beasiswa_id" value="{{ $HitunganSmart->jenis_beasiswa_id }}">
                     @error('jenis_beasiswa_id')
                     <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
                     @enderror
@@ -59,7 +76,7 @@
 
             <!-- Kriteria Dinamis -->
             <div id="kriteria-container" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {{-- Diisi oleh JavaScript --}}
+                {{-- JS akan isikan --}}
             </div>
 
             <div class="flex space-x-4 justify-start mt-4">
@@ -70,7 +87,6 @@
     </div>
 </div>
 
-{{-- Script: Load Kriteria --}}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const beasiswaSelect = document.getElementById('jenis_beasiswa_id');
@@ -96,18 +112,27 @@
             select.classList.add('border', 'p-3', 'rounded', 'shadow');
             select.required = true;
 
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Pilih Nilai';
-            select.appendChild(defaultOption);
+            let adaNilai = false; // flag apakah isian lama sudah ada
 
             kriteria.subkriterias.forEach(sub => {
                 const option = document.createElement('option');
                 option.value = sub.sub_kriteria;
                 option.textContent = `${sub.sub_kriteria} (${sub.nilai})`;
-                option.selected = sub.sub_kriteria === selectedNilai;
+                if (sub.sub_kriteria == selectedNilai) {
+                    option.selected = true;
+                    adaNilai = true;
+                }
                 select.appendChild(option);
             });
+
+            // Kalau belum pernah diinput, tambah placeholder "Pilih Nilai"
+            if (!adaNilai) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Pilih Nilai';
+                defaultOption.selected = true;
+                select.insertBefore(defaultOption, select.firstChild);
+            }
 
             wrapper.appendChild(select);
             return wrapper;
@@ -121,9 +146,10 @@
                     if (data.length === 0) {
                         kriteriaContainer.innerHTML = '<p class="text-gray-500">Tidak ada kriteria untuk beasiswa ini.</p>';
                     } else {
+                        // ini array [kriteria_id => sub_kriteria] dari controller
+                        const selectedNilai = @json($nilaiKriteria ?? []);
                         data.forEach(kriteria => {
-                            const selectedNilai = @json($perhitungan->nilai_kriteria ?? []);
-                            const input = createKriteriaInput(kriteria, selectedNilai[kriteria.id]);
+                            const input = createKriteriaInput(kriteria, selectedNilai[kriteria.id] ?? '');
                             kriteriaContainer.appendChild(input);
                         });
                     }
@@ -132,12 +158,6 @@
                     kriteriaContainer.innerHTML = '<p class="text-red-600">Gagal memuat kriteria.</p>';
                 });
         }
-
-        beasiswaSelect.addEventListener('change', () => {
-            const id = beasiswaSelect.value;
-            if (id) loadKriteria(id);
-            else clearKriteria();
-        });
 
         @if($HitunganSmart->jenis_beasiswa_id)
         loadKriteria({{ $HitunganSmart->jenis_beasiswa_id }});
