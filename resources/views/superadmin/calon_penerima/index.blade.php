@@ -43,9 +43,12 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex flex-col">
-                    <label for="NPSN" class="text-sm font-medium text-[16px] mb-2">NPSN</label>
-                    <input type="text" id="NPSN" name="NPSN" class="w-full p-3 border rounded-lg shadow-sm" required />
-                </div>
+    <label for="NPSN" class="text-sm font-medium text-[16px] mb-2">NPSN</label>
+    <input type="text" id="NPSN" name="NPSN" class="w-full p-3 border rounded-lg shadow-sm"
+           required pattern="\d{8}" inputmode="numeric" placeholder="Contoh: 12345678 (8 digit angka)" />
+    <small class="text-gray-500 mt-1">Pastikan NPSN terdiri dari 8 digit angka tanpa huruf atau simbol.</small>
+</div>
+
                 <div class="flex flex-col">
                     <label for="jenis_beasiswa_id" class="text-sm font-medium text-[16px] mb-2">Pilih Beasiswa</label>
                     <select id="jenis_beasiswa_id" name="jenis_beasiswa_id" class="w-full p-3 border rounded-lg shadow-sm" required>

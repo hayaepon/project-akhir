@@ -24,7 +24,7 @@ class CalonPenerimaController extends Controller
         $request->validate([
             'no_pendaftaran' => 'required|unique:calon_penerimas',
             'nama_calon_penerima' => 'required',
-            'NPSN' => 'required',
+            'NPSN' => 'required|numeric',
             'jenis_beasiswa_id' => 'required|exists:jenis_beasiswas,id',
         ]);
 
