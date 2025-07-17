@@ -161,30 +161,40 @@
         });
     @endif
 
-    // Filter search
+    // Inisialisasi
+    const entriesInput = document.getElementById("entries");
     const searchInput = document.getElementById("search");
     const tableBody = document.getElementById("table-body");
-    searchInput.addEventListener("input", function () {
-        const searchTerm = this.value.toLowerCase();
+
+    function applyShowEntries() {
+        const limit = parseInt(entriesInput.value);
+        const searchTerm = searchInput.value.toLowerCase();
+        let count = 0;
+
         const rows = tableBody.querySelectorAll("tr");
         rows.forEach(row => {
             const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? "" : "none";
-        });
-    });
+            const matchesSearch = text.includes(searchTerm);
 
-    // Show entries
-    const entriesInput = document.getElementById("entries");
-    entriesInput.addEventListener("input", function () {
-        const rows = tableBody.querySelectorAll("tr");
-        const limit = parseInt(this.value);
-        let count = 0;
-        rows.forEach(row => {
-            if (row.style.display !== "none") {
+            if (matchesSearch) {
                 count++;
                 row.style.display = count <= limit ? "" : "none";
+            } else {
+                row.style.display = "none";
             }
         });
+    }
+
+    // Saat halaman dimuat, langsung terapkan filter awal
+    window.addEventListener("DOMContentLoaded", () => {
+        applyShowEntries();
     });
+
+    // Saat search berubah
+    searchInput.addEventListener("input", applyShowEntries);
+
+    // Saat jumlah entries berubah
+    entriesInput.addEventListener("input", applyShowEntries);
 </script>
+
 @endsection
