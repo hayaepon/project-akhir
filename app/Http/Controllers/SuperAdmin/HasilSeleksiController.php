@@ -234,7 +234,13 @@ class HasilSeleksiController extends Controller
                 $rowData[] = $item->hasil ?? 0;
                 $rowData[] = ($index + 1);
 
-                $sheet->fromArray([$rowData], null, 'A' . $row);
+                $colIndex = 1; // Kolom dimulai dari A
+foreach ($rowData as $cellValue) {
+    $coordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex) . $row;
+    $sheet->setCellValueExplicit($coordinate, $cellValue, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+    $colIndex++;
+}
+
                 $row++;
             }
 
