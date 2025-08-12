@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Perhitungan SMART')
+@section('title', 'Input Nilai')
 
 @section('content')
 

@@ -1,7 +1,7 @@
 <aside class="fixed top-0 left-0 bg-blue-800 text-white w-64 min-h-screen flex flex-col justify-between rounded-none">
     <!-- Logo -->
     <div class="p-6 font-bold text-lg text-center border-b border-blue-700">
-        SPK KIP-K & Tahfiz
+        SPK KIP-K & Tahfiz For Leader
     </div>
 
     <!-- Menu Navigasi -->

@@ -73,7 +73,7 @@
     <div class="grid sm:grid-cols-2 gap-4 text-gray-700 text-sm">
         <ul class="list-disc list-inside space-y-1">
             <li><strong>Alternatif:</strong> Calon penerima beasiswa</li>
-            <li><strong>Kriteria:</strong> IPK, Penghasilan, Prestasi, dsb.</li>
+            <li><strong>Kriteria:</strong> Tanggungan Orang Tua, Penghasilan, Keterangan Rumah, dsb.</li>
             <li><strong>Bobot:</strong> Menentukan pentingnya setiap kriteria</li>
         </ul>
         <ul class="list-disc list-inside space-y-1">
